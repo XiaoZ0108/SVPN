@@ -60,8 +60,8 @@ class VpnConnectButton extends StatelessWidget {
                 size: screenWidth * 0.2,
               ),
               Text(
-                vpnService.stage?.toString() ??
-                    VPNStage.disconnected.toString(),
+                vpnService.capitalizeFirstLetter(vpnService.stage?.toString() ??
+                    VPNStage.disconnected.toString()),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
