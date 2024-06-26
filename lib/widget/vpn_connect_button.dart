@@ -3,15 +3,22 @@ import 'package:provider/provider.dart';
 import 'package:my_app/services/vpn_services.dart';
 import 'package:openvpn_flutter/openvpn_flutter.dart';
 
-class VpnConnectButton extends StatelessWidget {
-  const VpnConnectButton({super.key});
+class VpnConnectButton extends StatefulWidget {
+  const VpnConnectButton({super.key, required this.getIp});
+  final Future<void> Function(bool) getIp;
+
+  @override
+  State<VpnConnectButton> createState() => VpnConnectButtonState();
+}
+
+class VpnConnectButtonState extends State<VpnConnectButton> {
+  bool isLoading = false;
+  Color colour = Colors.blue;
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    Color colour = Colors.blue;
-    bool isLoading = false;
     return Consumer<VpnService>(builder: (context, vpnService, child) {
       return GestureDetector(
         onTap: isLoading
@@ -19,6 +26,7 @@ class VpnConnectButton extends StatelessWidget {
             : () async {
                 if (vpnService.stage?.toString() == 'connected') {
                   vpnService.disconnect();
+                  await widget.getIp(false);
                   colour = Colors.blue;
                 } else {
                   vpnService.initPlatformState();
@@ -30,9 +38,12 @@ class VpnConnectButton extends StatelessWidget {
                     attempt += 1;
                     await Future.delayed(const Duration(milliseconds: 500));
                   }
-                  vpnService.stage?.toString() == 'connected'
-                      ? colour = Colors.green
-                      : colour = Colors.blue;
+                  if (vpnService.stage?.toString() == 'connected') {
+                    colour = Colors.green;
+                    await widget.getIp(true);
+                  } else {
+                    colour = Colors.blue;
+                  }
                   isLoading = false;
                 }
               },

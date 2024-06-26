@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:my_app/widget/vpn_select_button.dart';
 import 'package:my_app/widget/vpn_connect_button.dart';
@@ -5,7 +7,6 @@ import 'package:my_app/widget/network_speed.dart';
 import 'package:my_app/services/vpn_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:openvpn_flutter/openvpn_flutter.dart';
 import 'package:my_app/models/vpn_country.dart';
 
 class Home extends StatefulWidget {
@@ -21,7 +22,7 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   late VpnService vpnService;
-
+  String ip = "Not Connected";
   @override
   void initState() {
     super.initState();
@@ -57,7 +58,6 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     Color defaultColor = Colors.white;
-    String ip = "Not Connected";
     // switch (vpnService.stage?.toString()) {
     //   case VpnEngine.vpnConnected:
     //     _defaultColor = Colors.green;
@@ -69,7 +69,7 @@ class HomeState extends State<Home> {
     //   default:
     //     _defaultColor = Colors.orange;
     // }
-    void getIP(bool isConnected) async {
+    Future<void> getIP(bool isConnected) async {
       if (isConnected == true) {
         String ipAddress = await VpnCountry.fetchIpAddress();
         setState(() {
@@ -102,7 +102,7 @@ class HomeState extends State<Home> {
                   up: vpnService.status?.byteIn,
                 ),
               ),
-              const VpnConnectButton(),
+              VpnConnectButton(getIp: getIP),
             ],
           );
         }));
