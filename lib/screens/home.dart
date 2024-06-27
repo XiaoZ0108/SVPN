@@ -23,11 +23,11 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
   late VpnService vpnService;
   String ip = "Not Connected";
+  Color defaultColor = Colors.white;
   @override
   void initState() {
     super.initState();
-    // final vpnService = Provider.of<VpnService>(context, listen: false);
-    // vpnService.requestPermissionAndroid();
+    _restoreIpAddress();
   }
 
   // Future<void> _restoreVpnState() async {
@@ -42,22 +42,21 @@ class HomeState extends State<Home> {
   //   await prefs.setString('vpnState', state);
   // }
 
-  // Future<void> _restoreIpAddress() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     current_ip = prefs.getString('ipAddress') ?? "Not Connected";
-  //   });
-  // }
+  Future<void> _restoreIpAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      ip = prefs.getString('ipAddress') ?? "Not Connected";
+    });
+  }
 
-  // Future<void> _saveIpAddress(String ip) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString('ipAddress', ip);
-  // }
+  Future<void> _saveIpAddress(String ip) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('ipAddress', ip);
+  }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    Color defaultColor = Colors.white;
     // switch (vpnService.stage?.toString()) {
     //   case VpnEngine.vpnConnected:
     //     _defaultColor = Colors.green;
@@ -74,10 +73,12 @@ class HomeState extends State<Home> {
         String ipAddress = await VpnCountry.fetchIpAddress();
         setState(() {
           ip = ipAddress;
+          _saveIpAddress(ip);
         });
       } else {
         setState(() {
           ip = "Not Connected";
+          _saveIpAddress(ip);
         });
       }
     }

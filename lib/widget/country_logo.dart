@@ -4,7 +4,7 @@ class CountryLogo extends StatelessWidget {
   final String country;
   final String? ip;
 
-  CountryLogo({required this.country, required this.ip});
+  const CountryLogo({required this.country, required this.ip, super.key});
   @override
   Widget build(BuildContext context) {
     //dynamic width

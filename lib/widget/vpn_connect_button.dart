@@ -19,6 +19,11 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    final vpnService = Provider.of<VpnService>(context, listen: false);
+    if (vpnService.stage?.toString() == 'connected') {
+      colour = Colors.green;
+    }
+
     return Consumer<VpnService>(builder: (context, vpnService, child) {
       return GestureDetector(
         onTap: isLoading
