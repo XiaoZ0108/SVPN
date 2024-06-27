@@ -2,6 +2,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:my_app/models/vpn_country.dart';
 import 'package:openvpn_flutter/openvpn_flutter.dart';
 
 class VpnService extends ChangeNotifier {
@@ -10,6 +11,7 @@ class VpnService extends ChangeNotifier {
   String? stage;
   bool granted = false;
   late Future<String> configFuture;
+  VpnCountry? currentCountry;
 
   VpnService() {
     engine = OpenVPN(
@@ -41,10 +43,21 @@ class VpnService extends ChangeNotifier {
   }
 
   Future<void> initPlatformState() async {
-    String config = await configFuture; // Wait for the config to load
+    String config;
+    String country;
+    if (currentCountry == null) {
+      //default connection
+      config = await configFuture; // Wait for the config to load
+      country = "Australia";
+    } else {
+      //custom connection
+      config = currentCountry!.config!;
+      country = currentCountry!.country;
+    }
+
     engine.connect(
       config,
-      "USA",
+      country,
       username: defaultVpnUsername,
       password: defaultVpnPassword,
       certIsRequired: true,
@@ -69,6 +82,10 @@ class VpnService extends ChangeNotifier {
   String capitalizeFirstLetter(String s) {
     if (s.isEmpty) return s;
     return s[0].toUpperCase() + s.substring(1);
+  }
+
+  void setCountry(VpnCountry vc) {
+    currentCountry = vc;
   }
 }
 

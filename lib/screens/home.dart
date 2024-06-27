@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:my_app/widget/vpn_select_button.dart';
 import 'package:my_app/widget/vpn_connect_button.dart';

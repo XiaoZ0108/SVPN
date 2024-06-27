@@ -23,6 +23,10 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
+  void changeScreen() {}
+
+  void getCountry() {}
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
