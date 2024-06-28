@@ -1,9 +1,10 @@
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:io';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+
 import 'package:my_app/models/vpn_country.dart';
 import 'package:openvpn_flutter/openvpn_flutter.dart';
+import 'package:flutter/material.dart';
 
 class VpnService extends ChangeNotifier {
   late OpenVPN engine;
@@ -51,7 +52,7 @@ class VpnService extends ChangeNotifier {
       country = "Australia";
     } else {
       //custom connection
-      config = currentCountry!.config!;
+      config = currentCountry!.config ?? await configFuture;
       country = currentCountry!.country;
     }
 
@@ -86,6 +87,18 @@ class VpnService extends ChangeNotifier {
 
   void setCountry(VpnCountry vc) {
     currentCountry = vc;
+    notifyListeners();
+  }
+
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  void navigateTo(String routeName) {
+    navigatorKey.currentState?.pushReplacementNamed(routeName);
+    notifyListeners();
+  }
+
+  void goBack() {
+    navigatorKey.currentState?.pop();
+    notifyListeners();
   }
 }
 

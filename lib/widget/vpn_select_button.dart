@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:my_app/services/vpn_services.dart';
+import 'package:provider/provider.dart';
 import 'package:my_app/widget/country_logo.dart';
 
 class VPNButton extends StatefulWidget {
@@ -7,8 +8,10 @@ class VPNButton extends StatefulWidget {
       {super.key,
       required this.color,
       required this.country,
-      required this.ip});
+      required this.ip,
+      this.changeScreen});
 
+  final Function? changeScreen;
   final Color color;
   final String country;
   final String ip;
@@ -20,14 +23,15 @@ class VPNButton extends StatefulWidget {
 }
 
 class VPNButtonState extends State<VPNButton> {
-  void onChange() {}
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return GestureDetector(
-      onTap: onChange,
+      onTap: () {
+        Provider.of<VpnService>(context, listen: false)
+            .navigateTo('/countryScreen');
+      },
       child: Container(
         height: screenHeight * 0.08,
         margin: EdgeInsets.only(

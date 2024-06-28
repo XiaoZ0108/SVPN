@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class CountryLogo extends StatelessWidget {
   final String country;
   final String? ip;
-
-  const CountryLogo({required this.country, required this.ip, super.key});
+  final bool? selected;
+  const CountryLogo(
+      {required this.country, required this.ip, super.key, this.selected});
   @override
   Widget build(BuildContext context) {
     //dynamic width

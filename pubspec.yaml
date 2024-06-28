@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: ^2.2.3
   provider: ^6.1.2
   http: ^1.2.1
+  change_app_package_name: ^1.2.0
 
 dev_dependencies:
   flutter_test:

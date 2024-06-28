@@ -22,7 +22,7 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
   late VpnService vpnService;
   String ip = "Not Connected";
-  Color defaultColor = Colors.white;
+
   @override
   void initState() {
     super.initState();
@@ -56,17 +56,6 @@ class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    // switch (vpnService.stage?.toString()) {
-    //   case VpnEngine.vpnConnected:
-    //     _defaultColor = Colors.green;
-
-    //     break;
-    //   case VpnEngine.vpnDisconnected:
-    //     _defaultColor = Colors.white;
-    //     break;
-    //   default:
-    //     _defaultColor = Colors.orange;
-    // }
     Future<void> getIP(bool isConnected) async {
       if (isConnected == true) {
         String ipAddress = await VpnCountry.fetchIpAddress();
@@ -83,12 +72,25 @@ class HomeState extends State<Home> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: const Text("SecureNet VPN"),
-        ),
-        body: Consumer<VpnService>(builder: (context, vpnService, child) {
+        title: const Text("SecureNet VPN"),
+      ),
+      body: Consumer<VpnService>(
+        builder: (context, vpnService, child) {
+          Color defaultColor;
+          switch (vpnService.stage?.toString()) {
+            case 'connected':
+              defaultColor = Colors.green;
+              break;
+            case 'disconnected':
+              defaultColor = Colors.white;
+              break;
+            default:
+              defaultColor = Colors.orange;
+              break;
+          }
           return Column(
             children: [
               VPNButton(color: defaultColor, country: 'Australia', ip: ip),
@@ -105,6 +107,8 @@ class HomeState extends State<Home> {
               VpnConnectButton(getIp: getIP),
             ],
           );
-        }));
+        },
+      ),
+    );
   }
 }
