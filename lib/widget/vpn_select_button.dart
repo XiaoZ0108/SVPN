@@ -59,6 +59,7 @@ class VPNButtonState extends State<VPNButton> {
               country: widget.country,
               ip: widget.ip,
             ),
+            const Spacer(),
             Icon(
               Icons.arrow_forward_ios_rounded,
               size: screenWidth * 0.07,

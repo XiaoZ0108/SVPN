@@ -3,7 +3,7 @@ import 'package:my_app/models/vpn_country.dart';
 import 'package:my_app/screens/country_screen.dart';
 import 'package:my_app/services/vpn_services.dart';
 import 'package:provider/provider.dart';
-import 'package:my_app/screens/home.dart';
+import 'package:my_app/screens/main_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,10 +40,10 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             title: 'OpenVpn Demo',
             navigatorKey: vpnService.navigatorKey,
-            home: const Home(),
+            home: const MainScreen(),
             routes: {
               '/countryScreen': (context) => const CountryScreen(),
-              '/homeScreen': (context) => const Home(),
+              '/homeScreen': (context) => const MainScreen(),
             },
           );
         },

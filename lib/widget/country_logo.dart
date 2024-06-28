@@ -11,39 +11,32 @@ class CountryLogo extends StatelessWidget {
     //dynamic width
     double screenWidth = MediaQuery.of(context).size.width;
 
-    return Flexible(
-      flex: 1,
-      child: Container(
-        child: Row(
+    return Row(
+      children: [
+        Image(
+          image: AssetImage('assets/logo/$country.png'),
+        ),
+        SizedBox(
+          width: screenWidth * 0.05,
+        ),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image(
-              image: AssetImage('assets/logo/$country.png'),
+            Text(
+              country,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: screenWidth * 0.05),
             ),
-            SizedBox(
-              width: screenWidth * 0.05,
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  country,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: screenWidth * 0.05),
-                ),
-                Text(
-                  'IP $ip',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: screenWidth * 0.05),
-                )
-              ],
-            ),
+            Text(
+              'IP $ip',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: screenWidth * 0.05),
+            )
           ],
         ),
-      ),
+      ],
     );
   }
 }

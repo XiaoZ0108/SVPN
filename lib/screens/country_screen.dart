@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/models/vpn_country.dart';
 import 'package:my_app/widget/country_logo.dart';
 import 'package:my_app/widget/selected_card.dart';
 import 'package:provider/provider.dart';
