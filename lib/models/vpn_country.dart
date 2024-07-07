@@ -2,11 +2,24 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class VpnCountry {
-  VpnCountry({required this.country, this.ip, this.config});
+  VpnCountry({required this.country, this.config});
 
   final String country;
-  final String? ip;
   final String? config;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'country': country,
+      'config': config,
+    };
+  }
+
+  factory VpnCountry.fromJson(Map<String, dynamic> json) {
+    return VpnCountry(
+      country: json['country'],
+      config: json['config'],
+    );
+  }
 
   static Future<String> fetchIpAddress() async {
     try {

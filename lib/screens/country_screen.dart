@@ -59,7 +59,9 @@ class CountryScreenState extends State<CountryScreen> {
 
   void fConfig(String country) async {
     VpnService vpnService = Provider.of<VpnService>(context, listen: false);
-    vpnService.disconnect();
+    if (vpnService.stage?.toString() == 'connected') {
+      vpnService.disconnect();
+    }
     try {
       String config =
           await fetchConfig(country); // Assume fetchConfig is defined elsewhere

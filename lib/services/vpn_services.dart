@@ -5,8 +5,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/models/vpn_country.dart';
 import 'package:openvpn_flutter/openvpn_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:logger/logger.dart';
 
 class VpnService extends ChangeNotifier {
   late OpenVPN engine;
@@ -14,8 +14,8 @@ class VpnService extends ChangeNotifier {
   String? stage;
   bool granted = false;
   late Future<String> configFuture;
+  final _storage = const FlutterSecureStorage();
   VpnCountry? currentCountry;
-
   VpnService() {
     engine = OpenVPN(
       onVpnStatusChanged: (data) {
@@ -28,7 +28,7 @@ class VpnService extends ChangeNotifier {
       },
     );
     configFuture = loadConfig();
-
+    //getObject();
     engine.initialize(
       groupIdentifier: "group.com.laskarmedia.vpn",
       providerBundleIdentifier:
@@ -54,7 +54,7 @@ class VpnService extends ChangeNotifier {
       country = "Singapore";
     } else {
       //custom connection
-      config = currentCountry!.config ?? await configFuture;
+      config = currentCountry!.config!;
       country = currentCountry!.country;
     }
 
@@ -87,11 +87,6 @@ class VpnService extends ChangeNotifier {
     return s[0].toUpperCase() + s.substring(1);
   }
 
-  void setCountry(VpnCountry vc) {
-    currentCountry = vc;
-    notifyListeners();
-  }
-
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   void navigateTo(String routeName) {
     navigatorKey.currentState?.pushReplacementNamed(routeName);
@@ -103,19 +98,27 @@ class VpnService extends ChangeNotifier {
     notifyListeners();
   }
 
-  static Future<String> fetchIpAddress() async {
-    try {
-      var response = await http.get(Uri.parse('https://ipv4.seeip.org/jsonip'));
-      if (response.statusCode == 200) {
-        String res = response.body;
-        Map<String, dynamic> json = jsonDecode(res);
-        return json['ip'];
-      } else {
-        return "N/A";
-      }
-    } catch (e) {
-      return "N/A";
+  void setCountry(VpnCountry vc) async {
+    currentCountry = vc;
+    var logger = Logger();
+    logger.i(vc.config);
+    //await saveObject(vc);
+    notifyListeners();
+  }
+
+  Future<void> saveObject(VpnCountry object) async {
+    String jsonStr = json.encode(object.toJson());
+    await _storage.write(key: 'myObject', value: jsonStr);
+    notifyListeners();
+  }
+
+  Future<void> getObject() async {
+    String? jsonStr = await _storage.read(key: 'myObject');
+    if (jsonStr != null) {
+      Map<String, dynamic> jsonMap = json.decode(jsonStr);
+      currentCountry = VpnCountry.fromJson(jsonMap);
     }
+    notifyListeners();
   }
 }
 
