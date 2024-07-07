@@ -58,7 +58,7 @@ class HomeState extends State<Home> {
     double screenWidth = MediaQuery.of(context).size.width;
     Future<void> getIP(bool isConnected) async {
       if (isConnected == true) {
-        String ipAddress = await VpnCountry.fetchIpAddress();
+        String ipAddress = await VpnService.fetchIpAddress();
         setState(() {
           ip = ipAddress;
           _saveIpAddress(ip);

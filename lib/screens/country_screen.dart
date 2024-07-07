@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:my_app/services/vpn_services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:lottie/lottie.dart';
 import 'package:my_app/widget/animation.dart';
+import "package:my_app/models/vpn_country.dart";
 
 class CountryScreen extends StatefulWidget {
   const CountryScreen({super.key});
@@ -29,7 +29,7 @@ class CountryScreenState extends State<CountryScreen> {
   Future<Map<String, String>> fetchCountryData() async {
     final response = await http
         .get(Uri.parse('http://192.168.0.5:3000/vpnStatus'))
-        .timeout(const Duration(seconds: 5));
+        .timeout(const Duration(seconds: 8));
 
     if (response.statusCode == 200) {
       Map<String, String> data =
@@ -38,6 +38,36 @@ class CountryScreenState extends State<CountryScreen> {
     } else {
       throw Exception('Failed to load country data');
     }
+  }
+
+  Future<String> fetchConfig(String country) async {
+    final response = await http.get(
+        Uri.parse('http://192.168.0.5:3000/vpnConfig?country=$country'),
+        headers: {
+          'Authorization':
+              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ4aWFvemVveEBnbWFpbC5jb20iLCJpYXQiOjE3MjAzMzE3MjksImV4cCI6MTcyMDkzNjUyOX0.ELFda4u3tY_tZQW413-hfFQhPLVePFnXrIk7Q35Bwdg', // Add Bearer token to headers
+        }).timeout(const Duration(seconds: 10));
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      String config = jsonResponse['config'];
+      return config;
+    } else {
+      throw Exception('Failed to load config');
+    }
+  }
+
+  void fConfig(String country) async {
+    VpnService vpnService = Provider.of<VpnService>(context, listen: false);
+    vpnService.disconnect();
+    try {
+      String config =
+          await fetchConfig(country); // Assume fetchConfig is defined elsewhere
+      vpnService.setCountry(VpnCountry(country: country, config: config));
+    } catch (e) {
+      // Handle error fetching config
+    }
+    goback();
   }
 
   void goback() {
@@ -86,8 +116,8 @@ class CountryScreenState extends State<CountryScreen> {
                     countryLogo: CountryLogo(country: country),
                     selected: true,
                     latency: latency,
-                    onTap: () {
-                      goback();
+                    onTap: () async {
+                      fConfig(country);
                     });
               },
             );

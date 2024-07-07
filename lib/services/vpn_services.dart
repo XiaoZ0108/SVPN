@@ -1,10 +1,12 @@
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:io';
 import 'dart:async';
-
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/models/vpn_country.dart';
 import 'package:openvpn_flutter/openvpn_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class VpnService extends ChangeNotifier {
   late OpenVPN engine;
@@ -99,6 +101,21 @@ class VpnService extends ChangeNotifier {
   void goBack() {
     navigatorKey.currentState?.pop();
     notifyListeners();
+  }
+
+  static Future<String> fetchIpAddress() async {
+    try {
+      var response = await http.get(Uri.parse('https://ipv4.seeip.org/jsonip'));
+      if (response.statusCode == 200) {
+        String res = response.body;
+        Map<String, dynamic> json = jsonDecode(res);
+        return json['ip'];
+      } else {
+        return "N/A";
+      }
+    } catch (e) {
+      return "N/A";
+    }
   }
 }
 
