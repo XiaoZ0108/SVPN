@@ -5,11 +5,12 @@ class SelectableCountryCard extends StatelessWidget {
   final CountryLogo countryLogo;
   final bool selected;
   final VoidCallback onTap;
-
+  final String latency;
   const SelectableCountryCard(
       {required this.countryLogo,
       required this.selected,
       required this.onTap,
+      required this.latency,
       super.key});
 
   @override
@@ -26,7 +27,16 @@ class SelectableCountryCard extends StatelessWidget {
             selected ? const Color.fromARGB(255, 184, 85, 230) : Colors.white,
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: countryLogo,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              countryLogo,
+              Text(
+                latency,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
         ),
       ),
     );

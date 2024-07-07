@@ -93,7 +93,7 @@ class HomeState extends State<Home> {
           }
           return Column(
             children: [
-              VPNButton(color: defaultColor, country: 'Australia', ip: ip),
+              VPNButton(color: defaultColor, country: 'Singapore', ip: ip),
               Container(
                 padding: EdgeInsets.only(
                     left: screenWidth * 0.08,

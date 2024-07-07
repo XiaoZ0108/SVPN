@@ -49,7 +49,7 @@ class VpnService extends ChangeNotifier {
     if (currentCountry == null) {
       //default connection
       config = await configFuture; // Wait for the config to load
-      country = "Australia";
+      country = "Singapore";
     } else {
       //custom connection
       config = currentCountry!.config ?? await configFuture;
