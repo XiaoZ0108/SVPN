@@ -100,127 +100,133 @@ class RegisterScreenState extends State<RegisterScreen>
           ),
           backgroundColor: Colors.white,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Lottie.asset(
-                'assets/animation/regis.json',
-                height: screenHeight * 0.22,
-                controller: _controller,
-                onLoaded: (composition) {
-                  _controller
-                    ..duration = composition.duration
-                    ..forward();
-                },
-              ),
-              Form(
-                autovalidateMode: AutovalidateMode.always,
-                key: emailFormKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        fillColor: Colors.grey,
-                        labelText: 'Email',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Lottie.asset(
+                  'assets/animation/regis.json',
+                  height: screenHeight * 0.22,
+                  controller: _controller,
+                  onLoaded: (composition) {
+                    _controller
+                      ..duration = composition.duration
+                      ..forward();
+                  },
+                ),
+                Form(
+                  autovalidateMode: AutovalidateMode.always,
+                  key: emailFormKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          fillColor: Colors.grey,
+                          labelText: 'Email',
+                          border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(30.0)),
+                          ),
                         ),
+                        validator: (value) => _validateEmail(value!),
                       ),
-                      validator: (value) => _validateEmail(value!),
-                    ),
-                    const SizedBox(height: 16.0),
-                  ],
-                ),
-              ),
-              Form(
-                autovalidateMode: AutovalidateMode.always,
-                key: passwordFormKey1,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextFormField(
-                      controller: _passwordController1,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                        ),
-                      ),
-                      obscureText: true,
-                      validator: (value) => _validatePassword1(value!),
-                    ),
-                    const SizedBox(height: 16.0),
-                  ],
-                ),
-              ),
-              Form(
-                autovalidateMode: AutovalidateMode.always,
-                key: passwordFormKey2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextFormField(
-                      controller: _passwordController2,
-                      decoration: const InputDecoration(
-                        labelText: 'Confirm Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                        ),
-                      ),
-                      obscureText: true,
-                      validator: (value) => _validatePassword2(value!),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                errorMessage,
-                style: const TextStyle(color: Colors.red),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(100, 50),
-                  backgroundColor: Colors.green, //
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: isLoading
-                    ? null
-                    : () {
-                        if (emailFormKey.currentState!.validate() &&
-                            passwordFormKey1.currentState!.validate() &&
-                            passwordFormKey2.currentState!.validate()) {
-                          _register();
-                        }
-                      },
-                child: isLoading
-                    ? const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      )
-                    : const Text(
-                        'Register',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-              ),
-              const SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Have your own account? '),
-                  GestureDetector(
-                    onTap: _login,
-                    child: const Text(
-                      'Login Now',
-                      style: TextStyle(
-                          color: Colors.green, fontWeight: FontWeight.bold),
-                    ),
+                      const SizedBox(height: 16.0),
+                    ],
                   ),
-                ],
-              ),
-            ],
+                ),
+                Form(
+                  autovalidateMode: AutovalidateMode.always,
+                  key: passwordFormKey1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextFormField(
+                        controller: _passwordController1,
+                        decoration: const InputDecoration(
+                          labelText: 'Password',
+                          border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(30.0)),
+                          ),
+                        ),
+                        obscureText: true,
+                        validator: (value) => _validatePassword1(value!),
+                      ),
+                      const SizedBox(height: 16.0),
+                    ],
+                  ),
+                ),
+                Form(
+                  autovalidateMode: AutovalidateMode.always,
+                  key: passwordFormKey2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextFormField(
+                        controller: _passwordController2,
+                        decoration: const InputDecoration(
+                          labelText: 'Confirm Password',
+                          border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(30.0)),
+                          ),
+                        ),
+                        obscureText: true,
+                        validator: (value) => _validatePassword2(value!),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  errorMessage,
+                  style: const TextStyle(color: Colors.red),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(100, 50),
+                    backgroundColor: Colors.green, //
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          if (emailFormKey.currentState!.validate() &&
+                              passwordFormKey1.currentState!.validate() &&
+                              passwordFormKey2.currentState!.validate()) {
+                            _register();
+                          }
+                        },
+                  child: isLoading
+                      ? const CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
+                      : const Text(
+                          'Register',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Have your own account? '),
+                    GestureDetector(
+                      onTap: _login,
+                      child: const Text(
+                        'Login Now',
+                        style: TextStyle(
+                            color: Colors.green, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -239,7 +245,7 @@ class RegisterScreenState extends State<RegisterScreen>
     if (result["status"] == "success") {
       isLoading = false;
       Provider.of<VpnService>(context, listen: false)
-          .navigateTo('/homeScreen', arguments: {"email": email});
+          .navigateTo('/otpScreen', arguments: {"email": email});
     } else {
       setState(() {
         isLoading = false;
@@ -249,14 +255,14 @@ class RegisterScreenState extends State<RegisterScreen>
   }
 
   void _login() {
-    Provider.of<VpnService>(context, listen: false).navigateTo('/homeScreen');
+    Provider.of<VpnService>(context, listen: false).goBack();
   }
 
   Future<Map<String, dynamic>> validation(String email, String password) async {
     try {
       var response = await http
           .post(
-            Uri.parse('http://192.168.0.5:3000/login'),
+            Uri.parse('http://192.168.0.5:3000/register'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },

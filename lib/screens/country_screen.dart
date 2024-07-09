@@ -73,7 +73,7 @@ class CountryScreenState extends State<CountryScreen> {
   }
 
   void goback() {
-    Provider.of<VpnService>(context, listen: false).navigateTo('/homeScreen');
+    Provider.of<VpnService>(context, listen: false).goBack();
   }
 
   @override

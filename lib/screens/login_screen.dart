@@ -165,7 +165,7 @@ class LoginScreenState extends State<LoginScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Not yet register with us?'),
+                  const Text('Not yet register with us? '),
                   GestureDetector(
                     onTap: _register,
                     child: const Text(
@@ -206,10 +206,8 @@ class LoginScreenState extends State<LoginScreen>
   }
 
   void _register() {
-    //Provider.of<VpnService>(context, listen: false).navigateTo('/homeScreen');
-    setState(() {
-      isLoading = false;
-    });
+    Provider.of<VpnService>(context, listen: false)
+        .navigateTo('/registerScreen');
   }
 
   Future<Map<String, dynamic>> validation(String email, String password) async {

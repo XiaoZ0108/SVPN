@@ -90,8 +90,9 @@ class VpnService extends ChangeNotifier {
 
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   void navigateTo(String routeName, {Map<String, dynamic>? arguments}) {
-    navigatorKey.currentState
-        ?.pushReplacementNamed(routeName, arguments: arguments);
+    // navigatorKey.currentState
+    //     ?.pushReplacementNamed(routeName, arguments: arguments);
+    navigatorKey.currentState?.pushNamed(routeName, arguments: arguments);
     notifyListeners();
   }
 

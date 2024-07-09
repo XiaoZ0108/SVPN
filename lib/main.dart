@@ -6,6 +6,7 @@ import 'package:my_app/services/vpn_services.dart';
 import 'package:provider/provider.dart';
 import 'package:my_app/screens/main_screen.dart';
 import 'package:my_app/screens/register_screen.dart';
+import 'package:my_app/screens/opt_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,6 +48,8 @@ class _MyAppState extends State<MyApp> {
               '/countryScreen': (context) => const CountryScreen(),
               '/homeScreen': (context) => const MainScreen(),
               '/loginScreen': (context) => const LoginScreen(),
+              '/registerScreen': (context) => const RegisterScreen(),
+              '/otpScreen': (context) => const OtpScreen(),
             },
           );
         },
