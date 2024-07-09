@@ -73,6 +73,7 @@ class VpnService extends ChangeNotifier {
 
   void disconnect() {
     engine.disconnect();
+    status = VpnStatus.empty();
   }
 
   Future<void> requestPermissionAndroid() async {

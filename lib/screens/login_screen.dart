@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
+import 'package:my_app/services/vpn_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -55,7 +57,6 @@ class LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-
     return KeyboardDismissOnTap(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -140,6 +141,21 @@ class LoginScreenState extends State<LoginScreen>
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
+              const SizedBox(height: 32.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Not yet register with us?'),
+                  GestureDetector(
+                    onTap: _register,
+                    child: const Text(
+                      'Register Now',
+                      style: TextStyle(
+                          color: Colors.green, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -156,5 +172,9 @@ class LoginScreenState extends State<LoginScreen>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Logging in with email: $email')),
     );
+  }
+
+  void _register() {
+    Provider.of<VpnService>(context, listen: false).navigateTo('/homeScreen');
   }
 }
