@@ -55,6 +55,12 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic>? arguments =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    // Access passed data
+    final String userId = arguments?['email'] ?? '';
+
     double screenWidth = MediaQuery.of(context).size.width;
     Future<void> getIP(bool isConnected) async {
       if (isConnected == true) {
@@ -108,6 +114,7 @@ class HomeState extends State<Home> {
                 ),
               ),
               VpnConnectButton(getIp: getIP),
+              Text(userId),
             ],
           );
         },

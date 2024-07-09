@@ -3,6 +3,9 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:my_app/services/vpn_services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -19,6 +22,8 @@ class LoginScreenState extends State<LoginScreen>
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   late final AnimationController _controller;
+  bool isLoading = false;
+  String errorMessage = "";
   @override
   void initState() {
     super.initState();
@@ -48,8 +53,14 @@ class LoginScreenState extends State<LoginScreen>
     if (password.isEmpty) {
       return 'Please enter your password';
     }
-    if (password.length < 6) {
-      return 'Password must be at least 6 characters long';
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (!password.contains(RegExp(r'[A-Z]'))) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+      return 'Password must contain at least one special character';
     }
     return null;
   }
@@ -120,9 +131,12 @@ class LoginScreenState extends State<LoginScreen>
                       obscureText: true,
                       validator: (value) => _validatePassword(value!),
                     ),
-                    const SizedBox(height: 32.0),
                   ],
                 ),
+              ),
+              Text(
+                errorMessage,
+                style: const TextStyle(color: Colors.red),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -130,16 +144,22 @@ class LoginScreenState extends State<LoginScreen>
                   backgroundColor: Colors.green, //
                   foregroundColor: Colors.white,
                 ),
-                onPressed: () {
-                  if (passwordFormKey.currentState!.validate() &&
-                      emailFormKey.currentState!.validate()) {
-                    _login();
-                  }
-                },
-                child: const Text(
-                  'Login',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                onPressed: isLoading
+                    ? null
+                    : () {
+                        if (emailFormKey.currentState!.validate() &&
+                            passwordFormKey.currentState!.validate()) {
+                          _login();
+                        }
+                      },
+                child: isLoading
+                    ? const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      )
+                    : const Text(
+                        'Login',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
               ),
               const SizedBox(height: 32.0),
               Row(
@@ -163,18 +183,66 @@ class LoginScreenState extends State<LoginScreen>
     );
   }
 
-  void _login() {
-    final email = _emailController.text;
+  void _login() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = "";
+    });
+    final email = _emailController.text.toLowerCase();
     final password = _passwordController.text;
 
-    // Perform login action (e.g., API call) here
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Logging in with email: $email')),
-    );
+    Map<String, dynamic> result = await validation(email, password);
+    if (result["status"] == "success") {
+      String token = result["token"];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+      Provider.of<VpnService>(context, listen: false).navigateTo('/homeScreen');
+    } else {
+      setState(() {
+        isLoading = false;
+        errorMessage = result["message"];
+      });
+    }
   }
 
   void _register() {
-    Provider.of<VpnService>(context, listen: false).navigateTo('/homeScreen');
+    //Provider.of<VpnService>(context, listen: false).navigateTo('/homeScreen');
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<Map<String, dynamic>> validation(String email, String password) async {
+    try {
+      var response = await http
+          .post(
+            Uri.parse('http://192.168.0.5:3000/login'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(<String, String>{
+              'email': email,
+              'password': password,
+            }),
+          )
+          .timeout(const Duration(minutes: 1));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        return {
+          "status": "success",
+          "message": data['message'],
+          "token": data['token']
+        };
+      } else if (response.statusCode == 401) {
+        return {"status": "error", "message": "Wrong Password"};
+      } else {
+        return {"status": "error", "message": "Email Not Registered"};
+      }
+    } catch (e) {
+      return {
+        "status": "error",
+        "message": "Something Error, Please Try Again Later"
+      };
+    }
   }
 }

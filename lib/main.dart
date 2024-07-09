@@ -5,6 +5,7 @@ import 'package:my_app/screens/login_screen.dart';
 import 'package:my_app/services/vpn_services.dart';
 import 'package:provider/provider.dart';
 import 'package:my_app/screens/main_screen.dart';
+import 'package:my_app/screens/register_screen.dart';
 
 void main() {
   runApp(const MyApp());

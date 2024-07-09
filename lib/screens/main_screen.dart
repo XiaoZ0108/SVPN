@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/screens/home.dart';
 import 'package:my_app/screens/login_screen.dart';
+import 'package:my_app/screens/register_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -20,7 +21,8 @@ class MainScreenScreenState extends State<MainScreen> {
     Home(),
     // Text('User Page',
     //     style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    LoginScreen(),
+    //LoginScreen(),
+    RegisterScreen(),
   ];
 
   void _onItemTapped(int index) {
