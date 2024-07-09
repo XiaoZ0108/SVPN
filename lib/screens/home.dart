@@ -75,7 +75,10 @@ class HomeState extends State<Home> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text("SecureNet VPN"),
+        title: const Text(
+          "SecureNet VPN",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: Consumer<VpnService>(
         builder: (context, vpnService, child) {

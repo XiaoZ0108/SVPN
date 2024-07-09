@@ -28,7 +28,7 @@ class VpnService extends ChangeNotifier {
       },
     );
     configFuture = loadConfig();
-    //getObject();
+    getObject();
     engine.initialize(
       groupIdentifier: "group.com.laskarmedia.vpn",
       providerBundleIdentifier:
@@ -102,7 +102,7 @@ class VpnService extends ChangeNotifier {
     currentCountry = vc;
     var logger = Logger();
     logger.i(vc.config);
-    //await saveObject(vc);
+    await saveObject(vc);
     notifyListeners();
   }
 

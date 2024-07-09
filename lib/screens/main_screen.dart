@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/screens/home.dart';
+import 'package:my_app/screens/login_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -17,8 +18,9 @@ class MainScreenScreenState extends State<MainScreen> {
     Text('Settings Page',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
     Home(),
-    Text('User Page',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    // Text('User Page',
+    //     style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    LoginScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -35,6 +37,7 @@ class MainScreenScreenState extends State<MainScreen> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
@@ -50,7 +53,7 @@ class MainScreenScreenState extends State<MainScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.green,
         onTap: _onItemTapped,
       ),
     );

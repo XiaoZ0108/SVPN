@@ -96,7 +96,7 @@ class CountryScreenState extends State<CountryScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const LottieW(
-                lottie: 'loading',
+                lottie: 'find',
                 text: "Fetching Country List",
                 color: Colors.lightBlue);
           } else if (snapshot.hasError) {
