@@ -74,8 +74,10 @@ class CountryScreenState extends State<CountryScreen> {
 
   void goback() {
     Navigator.pushNamedAndRemoveUntil(
-        context, '/homeScreen', (Route<dynamic> route) => false,
-        arguments: {"scIndex": '1'});
+      context,
+      '/homeScreen',
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
