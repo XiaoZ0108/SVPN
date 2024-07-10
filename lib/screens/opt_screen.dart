@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:lottie/lottie.dart';
+import 'package:my_app/widget/lottie_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'dart:convert';
 import 'package:my_app/services/vpn_services.dart';
+import 'dart:async';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({
@@ -20,15 +22,44 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
   String _pinCode = "";
   String errorMessage = "";
   bool isLoading = false;
+  bool freeze = false;
+  Color resendC = Colors.green;
+  Timer? _timer;
+  static const int _start = 120;
+  int _current = _start;
+
   @override
   void initState() {
     super.initState();
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void startTimer() {
+    _timer?.cancel();
+    _current = _start;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_current > 0) {
+        setState(() {
+          _current--;
+        });
+      } else {
+        timer.cancel();
+        setState(() {
+          freeze = false;
+          resendC = Colors.green;
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-
     final Map<String, dynamic>? arguments =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final String email = arguments?['email'] ?? '';
@@ -48,9 +79,10 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Lottie.asset(
-                'assets/animation/email.json',
-                height: screenHeight * 0.22,
+              const LottieController(
+                ratio: 0.22,
+                name: 'email',
+                type: true,
               ),
               const Text("An Email Has Been Sent To "),
               Text(
@@ -61,7 +93,7 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                     color: Color.fromARGB(255, 224, 79, 224)),
               ),
               Form(
-                autovalidateMode: AutovalidateMode.always,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 key: formKey,
                 child: PinCodeTextField(
                   appContext: context,
@@ -120,17 +152,24 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                 children: [
                   const Text('Did not received email? '),
                   GestureDetector(
-                    onTap: () {
-                      resend(email);
-                    },
-                    child: const Text(
+                    onTap: freeze
+                        ? null
+                        : () {
+                            resend(email);
+                          },
+                    child: Text(
                       'Resend',
                       style: TextStyle(
-                          color: Colors.green, fontWeight: FontWeight.bold),
+                          color: resendC, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
               ),
+              if (freeze)
+                Text(
+                  'Resend OTP in ${_current ~/ 60}:${(_current % 60).toString().padLeft(2, '0')}',
+                  style: const TextStyle(color: Colors.red),
+                ),
             ],
           ),
         ),
@@ -151,15 +190,15 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
               'otp': otp,
             }),
           )
-          .timeout(const Duration(minutes: 1));
+          .timeout(const Duration(seconds: 30));
+      var data = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
         return {
           "status": "success",
           "message": data['message'],
         };
       } else if (response.statusCode == 400) {
-        return {"status": "error", "message": "Wrong PIN"};
+        return {"status": "error", "message": data['message']};
       } else {
         return {
           "status": "error",
@@ -190,5 +229,11 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
     }
   }
 
-  void resend(String email) {}
+  void resend(String email) {
+    setState(() {
+      freeze = true;
+      resendC = Colors.grey;
+    });
+    startTimer();
+  }
 }

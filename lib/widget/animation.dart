@@ -22,7 +22,9 @@ class LottieW extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Lottie.asset(
-              'assets/animation/$lottie.json', // Adjust path to your Lottie animation file
+              'assets/animation/$lottie.json',
+              frameRate:
+                  FrameRate.max, // Adjust path to your Lottie animation file
               width: screenWidth * 0.8, // Adjust width as needed
               height: screenWidth * 0.8,
               fit: BoxFit.contain, // Adjust fit as needed

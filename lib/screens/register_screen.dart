@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:lottie/lottie.dart';
+import 'package:my_app/widget/lottie_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:my_app/services/vpn_services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:my_app/widget/emailform.dart';
+import 'package:my_app/widget/passwordform.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({
@@ -14,21 +16,19 @@ class RegisterScreen extends StatefulWidget {
   RegisterScreenState createState() => RegisterScreenState();
 }
 
-class RegisterScreenState extends State<RegisterScreen>
-    with TickerProviderStateMixin {
+class RegisterScreenState extends State<RegisterScreen> {
   final emailFormKey = GlobalKey<FormState>();
   final passwordFormKey1 = GlobalKey<FormState>();
   final passwordFormKey2 = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController1 = TextEditingController();
   final TextEditingController _passwordController2 = TextEditingController();
-  late final AnimationController _controller;
+
   bool isLoading = false;
   String errorMessage = "";
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this);
   }
 
   @override
@@ -36,39 +36,11 @@ class RegisterScreenState extends State<RegisterScreen>
     _emailController.dispose();
     _passwordController1.dispose();
     _passwordController2.dispose();
-    _controller.dispose();
+
     super.dispose();
   }
 
-  String? _validateEmail(String email) {
-    if (email.isEmpty) {
-      return 'Please enter your email';
-      //return null;
-    }
-    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
-      return 'Please enter a valid email';
-    }
-    return null;
-  }
-
-  String? _validatePassword1(String password) {
-    if (password.isEmpty) {
-      return 'Please enter your password';
-    }
-    if (password.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
-    if (!password.contains(RegExp(r'[A-Z]'))) {
-      return 'Password must contain at least one uppercase letter';
-    }
-    if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
-      return 'Password must contain at least one special character';
-    }
-
-    return null;
-  }
-
-  String? _validatePassword2(String password) {
+  String? _validatePassword(String password) {
     if (password.isEmpty) {
       return 'Please enter your password';
     }
@@ -89,7 +61,6 @@ class RegisterScreenState extends State<RegisterScreen>
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
     return KeyboardDismissOnTap(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -106,80 +77,20 @@ class RegisterScreenState extends State<RegisterScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Lottie.asset(
-                  'assets/animation/regis.json',
-                  height: screenHeight * 0.22,
-                  controller: _controller,
-                  onLoaded: (composition) {
-                    _controller
-                      ..duration = composition.duration
-                      ..forward();
-                  },
-                ),
-                Form(
-                  autovalidateMode: AutovalidateMode.always,
-                  key: emailFormKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(
-                          fillColor: Colors.grey,
-                          labelText: 'Email',
-                          border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(30.0)),
-                          ),
-                        ),
-                        validator: (value) => _validateEmail(value!),
-                      ),
-                      const SizedBox(height: 16.0),
-                    ],
-                  ),
-                ),
-                Form(
-                  autovalidateMode: AutovalidateMode.always,
-                  key: passwordFormKey1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormField(
-                        controller: _passwordController1,
-                        decoration: const InputDecoration(
-                          labelText: 'Password',
-                          border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(30.0)),
-                          ),
-                        ),
-                        obscureText: true,
-                        validator: (value) => _validatePassword1(value!),
-                      ),
-                      const SizedBox(height: 16.0),
-                    ],
-                  ),
-                ),
-                Form(
-                  autovalidateMode: AutovalidateMode.always,
-                  key: passwordFormKey2,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormField(
-                        controller: _passwordController2,
-                        decoration: const InputDecoration(
-                          labelText: 'Confirm Password',
-                          border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(30.0)),
-                          ),
-                        ),
-                        obscureText: true,
-                        validator: (value) => _validatePassword2(value!),
-                      ),
-                    ],
-                  ),
+                const LottieController(ratio: 0.22, name: 'regis'),
+                EmailForm(
+                    controller: _emailController,
+                    label: "Email",
+                    formKey: emailFormKey),
+                PasswordForm(
+                    controller: _passwordController1,
+                    label: "Password",
+                    formKey: passwordFormKey1),
+                PasswordForm(
+                  controller: _passwordController2,
+                  label: "Configrm Password",
+                  formKey: passwordFormKey2,
+                  validate: _validatePassword,
                 ),
                 Text(
                   errorMessage,
@@ -271,15 +182,20 @@ class RegisterScreenState extends State<RegisterScreen>
               'password': password,
             }),
           )
-          .timeout(const Duration(minutes: 1));
+          .timeout(const Duration(seconds: 30));
+      var data = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
         return {
           "status": "success",
           "message": data['message'],
         };
+      } else if (response.statusCode == 409) {
+        return {
+          "status": "error",
+          "message": data['message'],
+        };
       } else {
-        return {"status": "error", "message": "Error during registration"};
+        return {"status": "error", "message": data['message']};
       }
     } catch (e) {
       return {"status": "error", "message": "Error during registration"};
