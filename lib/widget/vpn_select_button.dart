@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/services/vpn_services.dart';
-import 'package:provider/provider.dart';
 import 'package:my_app/widget/country_logo.dart';
 
 class VPNButton extends StatefulWidget {
@@ -29,8 +27,9 @@ class VPNButtonState extends State<VPNButton> {
     double screenHeight = MediaQuery.of(context).size.height;
     return GestureDetector(
       onTap: () {
-        Provider.of<VpnService>(context, listen: false)
-            .navigateTo('/countryScreen');
+        // Provider.of<VpnService>(context, listen: false)
+        //     .navigateTo('/countryScreen');
+        Navigator.pushNamed(context, '/countryScreen');
       },
       child: Container(
         height: screenHeight * 0.08,

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:lottie/lottie.dart';
 import 'package:my_app/widget/lottie_controller.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'dart:convert';
-import 'package:my_app/services/vpn_services.dart';
 import 'dart:async';
 
 class OtpScreen extends StatefulWidget {
@@ -27,7 +24,7 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
   Timer? _timer;
   static const int _start = 120;
   int _current = _start;
-
+  String email = '';
   @override
   void initState() {
     super.initState();
@@ -38,6 +35,18 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null && args.containsKey('email')) {
+      setState(() {
+        email = args['email'] ?? '';
+      });
+    }
   }
 
   void startTimer() {
@@ -60,9 +69,9 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic>? arguments =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final String email = arguments?['email'] ?? '';
+    // final Map<String, dynamic>? arguments =
+    //     ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    // final String email = arguments?['email'] ?? '';
 
     return KeyboardDismissOnTap(
       child: Scaffold(
@@ -219,8 +228,12 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
     });
     Map<String, dynamic> result = await validate(email, otp);
     if (result["status"] == "success") {
-      isLoading = false;
-      Provider.of<VpnService>(context, listen: false).navigateTo('/homeScreen');
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.pushNamedAndRemoveUntil(
+          context, '/homeScreen', (Route<dynamic> route) => false,
+          arguments: {'scIndex': "2"});
     } else {
       setState(() {
         isLoading = false;

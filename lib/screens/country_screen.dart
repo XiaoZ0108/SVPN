@@ -73,7 +73,9 @@ class CountryScreenState extends State<CountryScreen> {
   }
 
   void goback() {
-    Provider.of<VpnService>(context, listen: false).goBack();
+    Navigator.pushNamedAndRemoveUntil(
+        context, '/homeScreen', (Route<dynamic> route) => false,
+        arguments: {"scIndex": '1'});
   }
 
   @override

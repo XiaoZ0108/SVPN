@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:my_app/widget/lottie_controller.dart';
-import 'package:provider/provider.dart';
-import 'package:my_app/services/vpn_services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -147,7 +145,11 @@ class LoginScreenState extends State<LoginScreen> {
       String token = result["token"];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
-      Provider.of<VpnService>(context, listen: false).navigateTo('/homeScreen');
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.pushNamedAndRemoveUntil(
+          context, '/homeScreen', (Route<dynamic> route) => false);
     } else {
       setState(() {
         isLoading = false;
@@ -157,8 +159,7 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   void _register() {
-    Provider.of<VpnService>(context, listen: false)
-        .navigateTo('/registerScreen');
+    Navigator.pushNamed(context, '/registerScreen');
   }
 
   Future<Map<String, dynamic>> validation(String email, String password) async {

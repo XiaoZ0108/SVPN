@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:my_app/widget/lottie_controller.dart';
-import 'package:provider/provider.dart';
-import 'package:my_app/services/vpn_services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:my_app/widget/emailform.dart';
@@ -154,9 +152,14 @@ class RegisterScreenState extends State<RegisterScreen> {
 
     Map<String, dynamic> result = await validation(email, password);
     if (result["status"] == "success") {
-      isLoading = false;
-      Provider.of<VpnService>(context, listen: false)
-          .navigateTo('/otpScreen', arguments: {"email": email});
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.pushNamed(
+        context,
+        '/otpScreen',
+        arguments: {"email": email},
+      );
     } else {
       setState(() {
         isLoading = false;
@@ -166,7 +169,7 @@ class RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _login() {
-    Provider.of<VpnService>(context, listen: false).goBack();
+    Navigator.pop(context);
   }
 
   Future<Map<String, dynamic>> validation(String email, String password) async {

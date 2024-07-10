@@ -5,8 +5,8 @@ import 'package:my_app/screens/register_screen.dart';
 import 'package:my_app/screens/opt_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
+  const MainScreen({super.key, this.index = 1});
+  final int index;
   @override
   State<MainScreen> createState() {
     return MainScreenScreenState();
@@ -27,10 +27,28 @@ class MainScreenScreenState extends State<MainScreen> {
     //OtpScreen()
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.index;
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null && args.containsKey('scIndex')) {
+      setState(() {
+        _selectedIndex = int.tryParse(args['scIndex'] ?? '') ?? widget.index;
+      });
+    }
   }
 
   @override
