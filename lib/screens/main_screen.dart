@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/screens/home.dart';
-import 'package:my_app/screens/login_screen.dart';
 import 'package:my_app/screens/user_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key, this.index = 1});
+  const MainScreen({super.key, this.index = 0});
   final int index;
   @override
   State<MainScreen> createState() {
@@ -13,16 +12,11 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenScreenState extends State<MainScreen> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    UserScreen(),
     Home(),
-    // Text('User Page',
-    //     style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    LoginScreen(),
-    //RegisterScreen(),
-    //OtpScreen()
+    UserScreen(),
   ];
 
   @override
@@ -59,10 +53,6 @@ class MainScreenScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',

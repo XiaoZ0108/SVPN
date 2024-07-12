@@ -73,6 +73,20 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     UserService userService = Provider.of<UserService>(context, listen: true);
+    VpnService vpnService = Provider.of<VpnService>(context, listen: true);
+    Color defaultColor;
+    switch (vpnService.stage?.toString()) {
+      case 'connected':
+        defaultColor = Colors.green;
+        break;
+      case 'disconnected':
+        defaultColor = Colors.white;
+        break;
+      default:
+        defaultColor = Colors.orange;
+        break;
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -82,41 +96,25 @@ class HomeState extends State<Home> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: Consumer<VpnService>(
-        builder: (context, vpnService, child) {
-          Color defaultColor;
-          switch (vpnService.stage?.toString()) {
-            case 'connected':
-              defaultColor = Colors.green;
-              break;
-            case 'disconnected':
-              defaultColor = Colors.white;
-              break;
-            default:
-              defaultColor = Colors.orange;
-              break;
-          }
-          return Column(
-            children: [
-              VPNButton(
-                  color: defaultColor,
-                  country: vpnService.currentCountry!.country,
-                  ip: ip),
-              Container(
-                padding: EdgeInsets.only(
-                    left: screenWidth * 0.08,
-                    right: screenWidth * 0.08,
-                    top: screenWidth * 0.06),
-                child: NetworkSpeed(
-                  down: vpnService.status?.byteIn,
-                  up: vpnService.status?.byteIn,
-                ),
-              ),
-              VpnConnectButton(getIp: getIP),
-              Text(userService.currentUserinfo?.email ?? 'null'),
-            ],
-          );
-        },
+      body: Column(
+        children: [
+          VPNButton(
+              color: defaultColor,
+              country: vpnService.currentCountry!.country,
+              ip: ip),
+          Container(
+            padding: EdgeInsets.only(
+                left: screenWidth * 0.08,
+                right: screenWidth * 0.08,
+                top: screenWidth * 0.06),
+            child: NetworkSpeed(
+              down: vpnService.status?.byteIn,
+              up: vpnService.status?.byteIn,
+            ),
+          ),
+          VpnConnectButton(getIp: getIP),
+          Text(userService.currentUserinfo?.email ?? 'null'),
+        ],
       ),
     );
   }

@@ -234,7 +234,7 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
       if (!context.mounted) return;
       Navigator.pushNamedAndRemoveUntil(
           context, '/homeScreen', (Route<dynamic> route) => false,
-          arguments: {'scIndex': "2"});
+          arguments: {'scIndex': "1"});
     } else {
       setState(() {
         isLoading = false;

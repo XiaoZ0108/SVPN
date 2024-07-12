@@ -163,7 +163,8 @@ class LoginScreenState extends State<LoginScreen> {
         isLoading = false;
       });
       Navigator.pushNamedAndRemoveUntil(
-          context, '/homeScreen', (Route<dynamic> route) => false);
+          context, '/homeScreen', (Route<dynamic> route) => false,
+          arguments: {'scIndex': "1"});
     } else {
       setState(() {
         isLoading = false;
@@ -189,7 +190,7 @@ class LoginScreenState extends State<LoginScreen> {
               'password': password,
             }),
           )
-          .timeout(const Duration(seconds: 30));
+          .timeout(const Duration(seconds: 15));
 
       var data = jsonDecode(response.body);
       if (response.statusCode == 200) {

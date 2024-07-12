@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/models/vpn_country.dart';
 import 'package:my_app/screens/country_screen.dart';
 import 'package:my_app/screens/login_screen.dart';
 import 'package:my_app/services/vpn_services.dart';
@@ -40,7 +39,9 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'OpenVpn Demo',
         navigatorKey: vpnService.navigatorKey,
-        home: const MainScreen(),
+        home: userService.currentUserinfo == null
+            ? const LoginScreen()
+            : const MainScreen(),
         routes: {
           '/countryScreen': (context) => const CountryScreen(),
           '/homeScreen': (context) => const MainScreen(),
@@ -51,4 +52,32 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return MultiProvider(
+  //     providers: [
+  //       ChangeNotifierProvider(create: (_) => vpnService),
+  //       ChangeNotifierProvider(create: (_) => userService),
+  //     ],
+  //     child: Consumer<UserService>(
+  //       builder: (context, userService, child) {
+  //         return MaterialApp(
+  //           title: 'OpenVpn Demo',
+  //           navigatorKey: vpnService.navigatorKey,
+  //           home: userService.currentUserinfo == null
+  //               ? const LoginScreen()
+  //               : const MainScreen(),
+  //           routes: {
+  //             '/countryScreen': (context) => const CountryScreen(),
+  //             '/homeScreen': (context) => const MainScreen(),
+  //             '/loginScreen': (context) => const LoginScreen(),
+  //             '/registerScreen': (context) => const RegisterScreen(),
+  //             '/otpScreen': (context) => const OtpScreen(),
+  //           },
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 }

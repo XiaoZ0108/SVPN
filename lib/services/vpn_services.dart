@@ -1,12 +1,9 @@
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:io';
 import 'dart:async';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/models/vpn_country.dart';
 import 'package:openvpn_flutter/openvpn_flutter.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:logger/logger.dart';
 import 'package:my_app/services/storage_service.dart';
 
 class VpnService extends ChangeNotifier {
@@ -15,7 +12,6 @@ class VpnService extends ChangeNotifier {
   String? stage;
   bool granted = false;
   late Future<String> configFuture;
-  final _storage = const FlutterSecureStorage();
   VpnCountry? currentCountry = VpnCountry(country: 'Default');
   VpnService() {
     engine = OpenVPN(
@@ -107,8 +103,6 @@ class VpnService extends ChangeNotifier {
   }
 
   Future<void> saveObject(VpnCountry object) async {
-    // String jsonStr = json.encode(object.toJson());
-    // await _storage.write(key: 'myObject', value: jsonStr);
     await SecureStorageService.saveObject(object, 'vpnCountry');
     notifyListeners();
   }
@@ -120,6 +114,12 @@ class VpnService extends ChangeNotifier {
       currentCountry = country;
       notifyListeners();
     }
+    notifyListeners();
+  }
+
+  Future<void> removeObject() async {
+    await SecureStorageService.removeObject('vpnCountry');
+    currentCountry = VpnCountry(country: 'Default');
     notifyListeners();
   }
 }

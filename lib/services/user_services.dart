@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/models/user.dart';
 import 'package:my_app/services/storage_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserService extends ChangeNotifier {
   UserInfo? currentUserinfo;
-
+  bool login = false;
   UserService() {
     _init();
   }
@@ -30,5 +31,18 @@ class UserService extends ChangeNotifier {
       currentUserinfo = uInfo;
       notifyListeners();
     }
+  }
+
+  Future<void> removeObject() async {
+    await SecureStorageService.removeObject('userInfo');
+    currentUserinfo = null;
+    notifyListeners();
+  }
+
+  Future<void> saveLoginStatus(bool status) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('login', status);
+    login = status;
+    notifyListeners();
   }
 }
