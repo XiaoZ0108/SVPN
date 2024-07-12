@@ -143,7 +143,7 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                     ? null
                     : () {
                         if (formKey.currentState!.validate()) {
-                          verify(email, _pinCode);
+                          verify(email, _pinCode, context);
                         }
                       },
                 child: isLoading
@@ -222,7 +222,7 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
     }
   }
 
-  void verify(String email, String otp) async {
+  void verify(String email, String otp, BuildContext context) async {
     setState(() {
       isLoading = true;
     });
@@ -231,6 +231,7 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
       setState(() {
         isLoading = false;
       });
+      if (!context.mounted) return;
       Navigator.pushNamedAndRemoveUntil(
           context, '/homeScreen', (Route<dynamic> route) => false,
           arguments: {'scIndex': "2"});

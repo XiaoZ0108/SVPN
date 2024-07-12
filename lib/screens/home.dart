@@ -7,6 +7,7 @@ import 'package:my_app/services/vpn_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:my_app/models/vpn_country.dart';
+import 'package:my_app/services/user_services.dart';
 
 class Home extends StatefulWidget {
   const Home({
@@ -53,24 +54,25 @@ class HomeState extends State<Home> {
     await prefs.setString('ipAddress', ip);
   }
 
+  Future<void> getIP(bool isConnected) async {
+    if (isConnected == true) {
+      String ipAddress = await VpnCountry.fetchIpAddress();
+      setState(() {
+        ip = ipAddress;
+        _saveIpAddress(ip);
+      });
+    } else {
+      setState(() {
+        ip = "Not Connected";
+        _saveIpAddress(ip);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    Future<void> getIP(bool isConnected) async {
-      if (isConnected == true) {
-        String ipAddress = await VpnCountry.fetchIpAddress();
-        setState(() {
-          ip = ipAddress;
-          _saveIpAddress(ip);
-        });
-      } else {
-        setState(() {
-          ip = "Not Connected";
-          _saveIpAddress(ip);
-        });
-      }
-    }
-
+    UserService userService = Provider.of<UserService>(context, listen: true);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -96,7 +98,10 @@ class HomeState extends State<Home> {
           }
           return Column(
             children: [
-              VPNButton(color: defaultColor, country: 'Singapore', ip: ip),
+              VPNButton(
+                  color: defaultColor,
+                  country: vpnService.currentCountry!.country,
+                  ip: ip),
               Container(
                 padding: EdgeInsets.only(
                     left: screenWidth * 0.08,
@@ -108,6 +113,7 @@ class HomeState extends State<Home> {
                 ),
               ),
               VpnConnectButton(getIp: getIP),
+              Text(userService.currentUserinfo?.email ?? 'null'),
             ],
           );
         },

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:my_app/models/user.dart';
 import 'package:my_app/widget/lottie_controller.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_app/widget/emailform.dart';
 import 'package:my_app/widget/passwordform.dart';
+import 'package:provider/provider.dart';
+import 'package:my_app/services/user_services.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -96,7 +100,7 @@ class LoginScreenState extends State<LoginScreen> {
                       : () {
                           if (emailFormKey.currentState!.validate() &&
                               passwordFormKey.currentState!.validate()) {
-                            _login();
+                            _login(context);
                           }
                         },
                   child: isLoading
@@ -132,7 +136,7 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _login() async {
+  void _login(BuildContext context) async {
     setState(() {
       isLoading = true;
       errorMessage = "";
@@ -145,6 +149,16 @@ class LoginScreenState extends State<LoginScreen> {
       String token = result["token"];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
+
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      String userEmail = decodedToken['userId'];
+      bool isPremium = decodedToken['premium'];
+
+      UserService userService =
+          Provider.of<UserService>(context, listen: false);
+      userService.setUser(UserInfo(email: userEmail, isPremium: isPremium));
+
+      if (!context.mounted) return;
       setState(() {
         isLoading = false;
       });

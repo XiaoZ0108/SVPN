@@ -7,6 +7,7 @@ import 'package:openvpn_flutter/openvpn_flutter.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:logger/logger.dart';
+import 'package:my_app/services/storage_service.dart';
 
 class VpnService extends ChangeNotifier {
   late OpenVPN engine;
@@ -15,7 +16,7 @@ class VpnService extends ChangeNotifier {
   bool granted = false;
   late Future<String> configFuture;
   final _storage = const FlutterSecureStorage();
-  VpnCountry? currentCountry;
+  VpnCountry? currentCountry = VpnCountry(country: 'Default');
   VpnService() {
     engine = OpenVPN(
       onVpnStatusChanged: (data) {
@@ -48,10 +49,10 @@ class VpnService extends ChangeNotifier {
   Future<void> initPlatformState() async {
     String config;
     String country;
-    if (currentCountry == null) {
+    if (currentCountry!.country == 'Default') {
       //default connection
       config = await configFuture; // Wait for the config to load
-      country = "Singapore";
+      country = "Default";
     } else {
       //custom connection
       config = currentCountry!.config!;
@@ -101,23 +102,23 @@ class VpnService extends ChangeNotifier {
 
   void setCountry(VpnCountry vc) async {
     currentCountry = vc;
-    var logger = Logger();
-    logger.i(vc.config);
     await saveObject(vc);
     notifyListeners();
   }
 
   Future<void> saveObject(VpnCountry object) async {
-    String jsonStr = json.encode(object.toJson());
-    await _storage.write(key: 'myObject', value: jsonStr);
+    // String jsonStr = json.encode(object.toJson());
+    // await _storage.write(key: 'myObject', value: jsonStr);
+    await SecureStorageService.saveObject(object, 'vpnCountry');
     notifyListeners();
   }
 
   Future<void> getObject() async {
-    String? jsonStr = await _storage.read(key: 'myObject');
-    if (jsonStr != null) {
-      Map<String, dynamic> jsonMap = json.decode(jsonStr);
-      currentCountry = VpnCountry.fromJson(jsonMap);
+    VpnCountry? country = await SecureStorageService.getObject(
+        'vpnCountry', (json) => VpnCountry.fromJson(json));
+    if (country != null) {
+      currentCountry = country;
+      notifyListeners();
     }
     notifyListeners();
   }

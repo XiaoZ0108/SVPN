@@ -106,7 +106,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                           if (emailFormKey.currentState!.validate() &&
                               passwordFormKey1.currentState!.validate() &&
                               passwordFormKey2.currentState!.validate()) {
-                            _register();
+                            _register(context);
                           }
                         },
                   child: isLoading
@@ -142,7 +142,7 @@ class RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _register() async {
+  void _register(BuildContext context) async {
     setState(() {
       isLoading = true;
       errorMessage = "";
@@ -155,6 +155,7 @@ class RegisterScreenState extends State<RegisterScreen> {
       setState(() {
         isLoading = false;
       });
+      if (!context.mounted) return;
       Navigator.pushNamed(
         context,
         '/otpScreen',

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/screens/home.dart';
 import 'package:my_app/screens/login_screen.dart';
-import 'package:my_app/screens/register_screen.dart';
-import 'package:my_app/screens/opt_screen.dart';
+import 'package:my_app/screens/user_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key, this.index = 1});
@@ -17,8 +16,7 @@ class MainScreenScreenState extends State<MainScreen> {
   int _selectedIndex = 1;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    Text('Settings Page',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    UserScreen(),
     Home(),
     // Text('User Page',
     //     style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),

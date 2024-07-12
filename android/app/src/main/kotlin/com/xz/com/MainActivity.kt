@@ -1,4 +1,4 @@
-package com.xz.securenet.vpn
+package com.xz.com
 import android.content.Intent
 import io.flutter.embedding.android.FlutterActivity
 import id.laskarmedia.openvpn_flutter.OpenVPNFlutterPlugin

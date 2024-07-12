@@ -46,7 +46,7 @@ class CountryScreenState extends State<CountryScreen> {
         headers: {
           'Authorization':
               'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ4aWFvemVveEBnbWFpbC5jb20iLCJpYXQiOjE3MjAzMzE3MjksImV4cCI6MTcyMDkzNjUyOX0.ELFda4u3tY_tZQW413-hfFQhPLVePFnXrIk7Q35Bwdg', // Add Bearer token to headers
-        }).timeout(const Duration(seconds: 10));
+        }).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
