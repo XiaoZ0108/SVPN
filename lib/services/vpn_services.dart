@@ -5,6 +5,7 @@ import 'package:my_app/models/vpn_country.dart';
 import 'package:openvpn_flutter/openvpn_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:my_app/services/storage_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VpnService extends ChangeNotifier {
   late OpenVPN engine;
@@ -121,6 +122,20 @@ class VpnService extends ChangeNotifier {
     await SecureStorageService.removeObject('vpnCountry');
     currentCountry = VpnCountry(country: 'Default');
     notifyListeners();
+  }
+
+  Future<void> saveTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('currentTime', DateTime.now().millisecondsSinceEpoch);
+    print('gg');
+    print(DateTime.now().millisecondsSinceEpoch);
+  }
+
+  Future<int> getTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int currentTime = prefs.getInt('currentTime') ?? 0;
+    //print(currentTime);
+    return currentTime;
   }
 }
 

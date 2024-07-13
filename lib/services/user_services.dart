@@ -7,11 +7,13 @@ class UserService extends ChangeNotifier {
   UserInfo? currentUserinfo;
   bool login = false;
   String token = '';
+  String time = '';
   UserService() {
     _init();
   }
   Future<void> _init() async {
     await getObject();
+    await getToken();
   }
 
   void setUser(UserInfo ui) async {
@@ -52,5 +54,12 @@ class UserService extends ChangeNotifier {
     await prefs.setString('token', newtoken);
     token = newtoken;
     notifyListeners();
+  }
+
+  Future<String> getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String newtoken = prefs.getString('token') ?? '';
+    token = newtoken;
+    return newtoken;
   }
 }
