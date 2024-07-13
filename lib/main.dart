@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/screens/country_screen.dart';
+import 'package:my_app/screens/forget1_screen.dart';
+import 'package:my_app/screens/forget2_screen.dart';
 import 'package:my_app/screens/login_screen.dart';
 import 'package:my_app/services/vpn_services.dart';
 import 'package:my_app/services/user_services.dart';
@@ -29,30 +31,6 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return MultiProvider(
-  //     providers: [
-  //       ChangeNotifierProvider(create: (_) => vpnService),
-  //       ChangeNotifierProvider(create: (_) => userService)
-  //     ],
-  //     child: MaterialApp(
-  //       title: 'OpenVpn Demo',
-  //       navigatorKey: vpnService.navigatorKey,
-  //       home: userService.currentUserinfo == null
-  //           ? const LoginScreen()
-  //           : const MainScreen(),
-  //       routes: {
-  //         '/countryScreen': (context) => const CountryScreen(),
-  //         '/homeScreen': (context) => const MainScreen(),
-  //         '/loginScreen': (context) => const LoginScreen(),
-  //         '/registerScreen': (context) => const RegisterScreen(),
-  //         '/otpScreen': (context) => const OtpScreen(),
-  //       },
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -74,6 +52,8 @@ class _MyAppState extends State<MyApp> {
               '/loginScreen': (context) => const LoginScreen(),
               '/registerScreen': (context) => const RegisterScreen(),
               '/otpScreen': (context) => const OtpScreen(),
+              '/forgetScreen1': (context) => const ForgetScreen1(),
+              '/forgetScreen2': (context) => const ForgetScreen2()
             },
           );
         },

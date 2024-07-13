@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:my_app/widget/animation.dart';
 import "package:my_app/models/vpn_country.dart";
+import 'package:my_app/services/user_services.dart';
 
 class CountryScreen extends StatefulWidget {
   const CountryScreen({super.key});
@@ -41,11 +42,13 @@ class CountryScreenState extends State<CountryScreen> {
   }
 
   Future<String> fetchConfig(String country) async {
+    UserService userService = Provider.of<UserService>(context, listen: false);
+    String currentToken = userService.token;
     final response = await http.get(
         Uri.parse('http://192.168.0.5:3000/vpnConfig?country=$country'),
         headers: {
           'Authorization':
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ4aWFvemVveEBnbWFpbC5jb20iLCJpYXQiOjE3MjAzMzE3MjksImV4cCI6MTcyMDkzNjUyOX0.ELFda4u3tY_tZQW413-hfFQhPLVePFnXrIk7Q35Bwdg', // Add Bearer token to headers
+              'Bearer $currentToken', // Add Bearer token to headers
         }).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {

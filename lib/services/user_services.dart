@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserService extends ChangeNotifier {
   UserInfo? currentUserinfo;
   bool login = false;
+  String token = '';
   UserService() {
     _init();
   }
@@ -43,6 +44,13 @@ class UserService extends ChangeNotifier {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('login', status);
     login = status;
+    notifyListeners();
+  }
+
+  Future<void> saveToken(String newtoken) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', newtoken);
+    token = newtoken;
     notifyListeners();
   }
 }

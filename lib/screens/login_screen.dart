@@ -24,6 +24,7 @@ class LoginScreenState extends State<LoginScreen> {
   final passwordFormKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   bool isLoading = false;
   String errorMessage = "";
   @override
@@ -113,7 +114,7 @@ class LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                 ),
-                const SizedBox(height: 32.0),
+                const SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -124,6 +125,21 @@ class LoginScreenState extends State<LoginScreen> {
                         'Register Now',
                         style: TextStyle(
                             color: Colors.green, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Forget your password? '),
+                    GestureDetector(
+                      onTap: _reset,
+                      child: const Text(
+                        'Reset Now',
+                        style: TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -144,37 +160,47 @@ class LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.toLowerCase();
     final password = _passwordController.text;
 
-    Map<String, dynamic> result = await validation(email, password);
-    if (result["status"] == "success") {
-      String token = result["token"];
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token);
+    try {
+      Map<String, dynamic> result = await validation(email, password);
+      if (result["status"] == "success") {
+        String token = result["token"];
 
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-      String userEmail = decodedToken['userId'];
-      bool isPremium = decodedToken['premium'];
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+        String userEmail = decodedToken['userId'];
+        bool isPremium = decodedToken['premium'];
 
-      UserService userService =
-          Provider.of<UserService>(context, listen: false);
-      userService.setUser(UserInfo(email: userEmail, isPremium: isPremium));
+        UserService userService =
+            Provider.of<UserService>(context, listen: false);
+        userService.saveToken(token);
+        userService.setUser(UserInfo(email: userEmail, isPremium: isPremium));
 
-      if (!context.mounted) return;
+        if (!context.mounted) return;
+        setState(() {
+          isLoading = false;
+        });
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/homeScreen', (Route<dynamic> route) => false,
+            arguments: {'scIndex': "1"});
+      } else {
+        setState(() {
+          isLoading = false;
+          errorMessage = result["message"];
+        });
+      }
+    } catch (err) {
       setState(() {
         isLoading = false;
-      });
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/homeScreen', (Route<dynamic> route) => false,
-          arguments: {'scIndex': "1"});
-    } else {
-      setState(() {
-        isLoading = false;
-        errorMessage = result["message"];
+        errorMessage = "Something Error, Please Try Again Later";
       });
     }
   }
 
   void _register() {
     Navigator.pushNamed(context, '/registerScreen');
+  }
+
+  void _reset() {
+    Navigator.pushNamed(context, '/forgetScreen1');
   }
 
   Future<Map<String, dynamic>> validation(String email, String password) async {

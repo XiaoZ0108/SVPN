@@ -3,27 +3,26 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:my_app/widget/lottie_controller.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:my_app/widget/emailform.dart';
 import 'package:my_app/widget/passwordform.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({
+class ForgetScreen2 extends StatefulWidget {
+  const ForgetScreen2({
     super.key,
   });
   @override
-  RegisterScreenState createState() => RegisterScreenState();
+  ForgetScreen2State createState() => ForgetScreen2State();
 }
 
-class RegisterScreenState extends State<RegisterScreen> {
-  final emailFormKey = GlobalKey<FormState>();
+class ForgetScreen2State extends State<ForgetScreen2> {
   final passwordFormKey1 = GlobalKey<FormState>();
   final passwordFormKey2 = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
+
   final TextEditingController _passwordController1 = TextEditingController();
   final TextEditingController _passwordController2 = TextEditingController();
 
   bool isLoading = false;
   String errorMessage = "";
+  String email = '';
   @override
   void initState() {
     super.initState();
@@ -31,11 +30,21 @@ class RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
     _passwordController1.dispose();
     _passwordController2.dispose();
-
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null && args.containsKey('email')) {
+      setState(() {
+        email = args['email'] ?? '';
+      });
+    }
   }
 
   String? _validatePassword(String password) {
@@ -64,7 +73,7 @@ class RegisterScreenState extends State<RegisterScreen> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text(
-            'Register',
+            'Reset Password',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           backgroundColor: Colors.white,
@@ -75,18 +84,14 @@ class RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const LottieController(ratio: 0.22, name: 'regis'),
-                EmailForm(
-                    controller: _emailController,
-                    label: "Email",
-                    formKey: emailFormKey),
+                const LottieController(ratio: 0.22, name: 'password'),
                 PasswordForm(
                     controller: _passwordController1,
-                    label: "Password",
+                    label: "New Password",
                     formKey: passwordFormKey1),
                 PasswordForm(
                   controller: _passwordController2,
-                  label: "Configrm Password",
+                  label: "Confirm New Password",
                   formKey: passwordFormKey2,
                   validate: _validatePassword,
                 ),
@@ -102,11 +107,11 @@ class RegisterScreenState extends State<RegisterScreen> {
                   ),
                   onPressed: isLoading
                       ? null
-                      : () {
-                          if (emailFormKey.currentState!.validate() &&
-                              passwordFormKey1.currentState!.validate() &&
+                      : () async {
+                          if (passwordFormKey1.currentState!.validate() &&
                               passwordFormKey2.currentState!.validate()) {
-                            _register(context);
+                            await resetPassword(
+                                email, _passwordController2.text, context);
                           }
                         },
                   child: isLoading
@@ -115,24 +120,9 @@ class RegisterScreenState extends State<RegisterScreen> {
                               AlwaysStoppedAnimation<Color>(Colors.white),
                         )
                       : const Text(
-                          'Register',
+                          'Reset',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                ),
-                const SizedBox(height: 16.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Have your own account? '),
-                    GestureDetector(
-                      onTap: _login,
-                      child: const Text(
-                        'Login Now',
-                        style: TextStyle(
-                            color: Colors.green, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -142,42 +132,16 @@ class RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _register(BuildContext context) async {
+  Future<void> resetPassword(
+      String email, String password, BuildContext context) async {
     setState(() {
       isLoading = true;
       errorMessage = "";
     });
-    final email = _emailController.text.toLowerCase();
-    final password = _passwordController2.text;
-
-    Map<String, dynamic> result = await validation(email, password);
-    if (result["status"] == "success") {
-      setState(() {
-        isLoading = false;
-      });
-      if (!context.mounted) return;
-      Navigator.pushNamed(
-        context,
-        '/otpScreen',
-        arguments: {"email": email},
-      );
-    } else {
-      setState(() {
-        isLoading = false;
-        errorMessage = result["message"];
-      });
-    }
-  }
-
-  void _login() {
-    Navigator.pop(context);
-  }
-
-  Future<Map<String, dynamic>> validation(String email, String password) async {
     try {
       var response = await http
           .post(
-            Uri.parse('http://192.168.0.5:3000/register'),
+            Uri.parse('http://192.168.0.5:3000/resetPass'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
@@ -189,20 +153,26 @@ class RegisterScreenState extends State<RegisterScreen> {
           .timeout(const Duration(seconds: 15));
       var data = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        return {
-          "status": "success",
-          "message": data['message'],
-        };
-      } else if (response.statusCode == 409) {
-        return {
-          "status": "error",
-          "message": data['message'],
-        };
+        setState(() {
+          isLoading = false;
+        });
+        if (!context.mounted) return;
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/loginScreen',
+          (Route<dynamic> route) => false,
+        );
       } else {
-        return {"status": "error", "message": data['message']};
+        setState(() {
+          isLoading = false;
+          errorMessage = data['message'];
+        });
       }
     } catch (e) {
-      return {"status": "error", "message": "Error during registration"};
+      setState(() {
+        isLoading = false;
+        errorMessage = "Error occurs during reset";
+      });
     }
   }
 }

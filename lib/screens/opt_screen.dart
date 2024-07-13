@@ -25,6 +25,7 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
   static const int _start = 120;
   int _current = _start;
   String email = '';
+  bool reset = false;
   @override
   void initState() {
     super.initState();
@@ -46,6 +47,11 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
       setState(() {
         email = args['email'] ?? '';
       });
+      args.containsKey('reset')
+          ? setState(() {
+              reset = true;
+            })
+          : null;
     }
   }
 
@@ -101,6 +107,7 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                     fontSize: 22,
                     color: Color.fromARGB(255, 224, 79, 224)),
               ),
+              const SizedBox(height: 8.0),
               Form(
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 key: formKey,
@@ -133,6 +140,7 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                 errorMessage,
                 style: const TextStyle(color: Colors.red),
               ),
+              const SizedBox(height: 8.0),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(100, 50),
@@ -163,8 +171,8 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                   GestureDetector(
                     onTap: freeze
                         ? null
-                        : () {
-                            resend(email);
+                        : () async {
+                            await resend(email);
                           },
                     child: Text(
                       'Resend',
@@ -190,7 +198,9 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
     try {
       var response = await http
           .post(
-            Uri.parse('http://192.168.0.5:3000/validate'),
+            Uri.parse(reset
+                ? 'http://192.168.0.5:3000/validateO'
+                : 'http://192.168.0.5:3000/validate'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
@@ -232,9 +242,14 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
         isLoading = false;
       });
       if (!context.mounted) return;
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/homeScreen', (Route<dynamic> route) => false,
-          arguments: {'scIndex': "1"});
+      reset
+          ? Navigator.pushNamed(context, '/forgetScreen2',
+              arguments: {"email": email})
+          : Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/loginScreen',
+              (Route<dynamic> route) => false,
+            );
     } else {
       setState(() {
         isLoading = false;
@@ -243,7 +258,26 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
     }
   }
 
-  void resend(String email) {
+  Future<void> resend(String email) async {
+    try {
+      var response = await http
+          .get(Uri.parse('http://192.168.0.5:3000/resendO?email=$email'))
+          .timeout(const Duration(seconds: 30));
+      var data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        setState(() {
+          errorMessage = data['message'];
+        });
+      } else {
+        setState(() {
+          errorMessage = data['message'];
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = "Error occurs during Resend";
+      });
+    }
     setState(() {
       freeze = true;
       resendC = Colors.grey;
