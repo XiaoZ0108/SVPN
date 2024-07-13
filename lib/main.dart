@@ -29,55 +29,55 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => vpnService),
-        ChangeNotifierProvider(create: (_) => userService)
-      ],
-      child: MaterialApp(
-        title: 'OpenVpn Demo',
-        navigatorKey: vpnService.navigatorKey,
-        home: userService.currentUserinfo == null
-            ? const LoginScreen()
-            : const MainScreen(),
-        routes: {
-          '/countryScreen': (context) => const CountryScreen(),
-          '/homeScreen': (context) => const MainScreen(),
-          '/loginScreen': (context) => const LoginScreen(),
-          '/registerScreen': (context) => const RegisterScreen(),
-          '/otpScreen': (context) => const OtpScreen(),
-        },
-      ),
-    );
-  }
-
   // @override
   // Widget build(BuildContext context) {
   //   return MultiProvider(
   //     providers: [
   //       ChangeNotifierProvider(create: (_) => vpnService),
-  //       ChangeNotifierProvider(create: (_) => userService),
+  //       ChangeNotifierProvider(create: (_) => userService)
   //     ],
-  //     child: Consumer<UserService>(
-  //       builder: (context, userService, child) {
-  //         return MaterialApp(
-  //           title: 'OpenVpn Demo',
-  //           navigatorKey: vpnService.navigatorKey,
-  //           home: userService.currentUserinfo == null
-  //               ? const LoginScreen()
-  //               : const MainScreen(),
-  //           routes: {
-  //             '/countryScreen': (context) => const CountryScreen(),
-  //             '/homeScreen': (context) => const MainScreen(),
-  //             '/loginScreen': (context) => const LoginScreen(),
-  //             '/registerScreen': (context) => const RegisterScreen(),
-  //             '/otpScreen': (context) => const OtpScreen(),
-  //           },
-  //         );
+  //     child: MaterialApp(
+  //       title: 'OpenVpn Demo',
+  //       navigatorKey: vpnService.navigatorKey,
+  //       home: userService.currentUserinfo == null
+  //           ? const LoginScreen()
+  //           : const MainScreen(),
+  //       routes: {
+  //         '/countryScreen': (context) => const CountryScreen(),
+  //         '/homeScreen': (context) => const MainScreen(),
+  //         '/loginScreen': (context) => const LoginScreen(),
+  //         '/registerScreen': (context) => const RegisterScreen(),
+  //         '/otpScreen': (context) => const OtpScreen(),
   //       },
   //     ),
   //   );
   // }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => vpnService),
+        ChangeNotifierProvider(create: (_) => userService),
+      ],
+      child: Consumer<UserService>(
+        builder: (context, userService, child) {
+          return MaterialApp(
+            title: 'OpenVpn Demo',
+            navigatorKey: vpnService.navigatorKey,
+            home: userService.currentUserinfo == null
+                ? const LoginScreen()
+                : const MainScreen(),
+            routes: {
+              '/countryScreen': (context) => const CountryScreen(),
+              '/homeScreen': (context) => const MainScreen(),
+              '/loginScreen': (context) => const LoginScreen(),
+              '/registerScreen': (context) => const RegisterScreen(),
+              '/otpScreen': (context) => const OtpScreen(),
+            },
+          );
+        },
+      ),
+    );
+  }
 }
