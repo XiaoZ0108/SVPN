@@ -110,7 +110,8 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
         int allowedTime = (responseData['allowedTime'] as num).toInt();
 
         if (allowedTime != -1) {
-          _disconnectTimer = Timer(Duration(seconds: allowedTime), () async {
+          _disconnectTimer =
+              Timer(Duration(seconds: allowedTime + 2), () async {
             await disconnect(vpnService);
           });
         }
@@ -132,5 +133,6 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
     vpnService.disconnect();
     await widget.getIp(false);
     colour = Colors.blue;
+    isLoading = false;
   }
 }
