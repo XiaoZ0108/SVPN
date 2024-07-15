@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:my_app/services/user_services.dart';
 import 'package:provider/provider.dart';
 import 'package:my_app/services/vpn_services.dart';
@@ -18,7 +19,7 @@ class VpnConnectButton extends StatefulWidget {
 class VpnConnectButtonState extends State<VpnConnectButton> {
   bool isLoading = false;
   Color colour = Colors.blue;
-  Timer? _disconnectTimer;
+  //Timer? _disconnectTimer;
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -109,10 +110,22 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
       if (responseData['allowed']) {
         int allowedTime = (responseData['allowedTime'] as num).toInt();
 
+        // if (allowedTime != -1) {
+
+        //   _disconnectTimer = Timer(Duration(seconds: allowedTime), () async {
+        //     await disconnect(vpnService);
+        //   });
+        // }
         if (allowedTime != -1) {
-          _disconnectTimer = Timer(Duration(seconds: allowedTime), () async {
-            await disconnect(vpnService);
-          });
+          final service = FlutterBackgroundService();
+          if (!await service.isRunning()) {
+            service.startService();
+          }
+          while (!await service.isRunning()) {
+            await Future.delayed(const Duration(milliseconds: 500));
+          }
+          service.invoke('setAsForeground');
+          service.invoke('countdown', {'allowTime': allowedTime});
         }
         vpnService.initPlatformState();
       } else {
@@ -128,6 +141,7 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
   }
 
   disconnect(VpnService vpnService) async {
+    FlutterBackgroundService().invoke('stop');
     VpnService.saveTime();
     VpnService.disconnect2();
     // await vpnService.saveTime();

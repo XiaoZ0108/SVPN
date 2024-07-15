@@ -10,6 +10,8 @@ import 'package:my_app/screens/main_screen.dart';
 import 'package:my_app/screens/register_screen.dart';
 import 'package:my_app/screens/opt_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'dart:async';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +21,61 @@ void main() async {
   if (status.isDenied) {
     await Permission.notification.request();
   }
-
+  await initializeService();
   runApp(const MyApp());
+}
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+
+  await service.configure(
+    iosConfiguration: IosConfiguration(),
+    androidConfiguration: AndroidConfiguration(
+      onStart: onStart,
+      isForegroundMode: false,
+    ),
+  );
+}
+
+@pragma('vm:entry-point')
+void onStart(ServiceInstance service) async {
+  if (service is AndroidServiceInstance) {
+    service.on('setAsForeground').listen((event) {
+      service.setAsForegroundService();
+    });
+
+    service.on('setAsBackground').listen((event) {
+      service.setAsBackgroundService();
+    });
+  }
+
+  service.on("stop").listen((event) {
+    service.stopSelf();
+  });
+
+  service.on('countdown').listen((event) {
+    int time = event?['allowTime'] ?? 0; // Default duration if not provided
+    int t = time;
+    int flag = 0;
+    Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (service is AndroidServiceInstance) {
+        if (await service.isForegroundService()) {
+          service.setForegroundNotificationInfo(
+            title: "SecureNet VPN",
+            content: "Connected:Countdown $t--",
+          );
+        }
+      }
+
+      flag += 1;
+      if (flag > time) {
+        VpnService.saveTime();
+        VpnService.disconnect2();
+        timer.cancel();
+        service.stopSelf();
+      }
+    });
+  });
 }
 
 class MyApp extends StatefulWidget {
