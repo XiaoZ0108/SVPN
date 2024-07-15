@@ -128,8 +128,10 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
   }
 
   disconnect(VpnService vpnService) async {
-    await vpnService.saveTime();
-    vpnService.disconnect();
+    VpnService.saveTime();
+    VpnService.disconnect2();
+    // await vpnService.saveTime();
+    // vpnService.disconnect();
     await widget.getIp(false);
     colour = Colors.blue;
   }

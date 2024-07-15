@@ -9,8 +9,17 @@ import 'package:provider/provider.dart';
 import 'package:my_app/screens/main_screen.dart';
 import 'package:my_app/screens/register_screen.dart';
 import 'package:my_app/screens/opt_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  VpnService.initializeEngine();
+
+  var status = await Permission.notification.status;
+  if (status.isDenied) {
+    await Permission.notification.request();
+  }
+
   runApp(const MyApp());
 }
 
