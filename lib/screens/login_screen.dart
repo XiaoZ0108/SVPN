@@ -4,7 +4,6 @@ import 'package:my_app/models/user.dart';
 import 'package:my_app/widget/lottie_controller.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_app/widget/emailform.dart';
 import 'package:my_app/widget/passwordform.dart';
 import 'package:provider/provider.dart';
