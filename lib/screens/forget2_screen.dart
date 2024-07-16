@@ -84,7 +84,11 @@ class ForgetScreen2State extends State<ForgetScreen2> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const LottieController(ratio: 0.22, name: 'password'),
+                const LottieController(
+                  ratio: 0.3,
+                  name: 'user',
+                  type: true,
+                ),
                 PasswordForm(
                     controller: _passwordController1,
                     label: "New Password",

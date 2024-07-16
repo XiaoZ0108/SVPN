@@ -6,7 +6,7 @@ import 'package:my_app/services/vpn_services.dart';
 import 'package:openvpn_flutter/openvpn_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:async';
+import 'package:my_app/services/storage_service.dart';
 
 class VpnConnectButton extends StatefulWidget {
   const VpnConnectButton({super.key, required this.getIp});
@@ -19,7 +19,7 @@ class VpnConnectButton extends StatefulWidget {
 class VpnConnectButtonState extends State<VpnConnectButton> {
   bool isLoading = false;
   Color colour = Colors.blue;
-  //Timer? _disconnectTimer;
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -95,27 +95,19 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
 
   Future<void> connect(
       VpnService vpnService, BuildContext context, String token) async {
-    int time = await vpnService.getTime();
+    String currentTime = await SecureStorageService.readTime();
     final response =
         await http.post(Uri.parse('http://192.168.0.5:3000/connect'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
               'Authorization': 'Bearer $token',
             },
-            body: jsonEncode(<String, dynamic>{
-              'disconnectTime': time.toString(),
-            }));
+            body: jsonEncode(<String, dynamic>{'disconnectTime': currentTime}));
     var responseData = jsonDecode(response.body);
     if (response.statusCode == 200) {
       if (responseData['allowed']) {
         int allowedTime = (responseData['allowedTime'] as num).toInt();
 
-        // if (allowedTime != -1) {
-
-        //   _disconnectTimer = Timer(Duration(seconds: allowedTime), () async {
-        //     await disconnect(vpnService);
-        //   });
-        // }
         if (allowedTime != -1) {
           final service = FlutterBackgroundService();
           if (!await service.isRunning()) {
@@ -141,11 +133,9 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
   }
 
   disconnect(VpnService vpnService) async {
-    FlutterBackgroundService().invoke('stop');
-    VpnService.saveTime();
-    VpnService.disconnect2();
-    // await vpnService.saveTime();
-    // vpnService.disconnect();
+    FlutterBackgroundService().invoke('setAsBackground');
+    await SecureStorageService.saveTime();
+    vpnService.disconnect();
     await widget.getIp(false);
     colour = Colors.blue;
     isLoading = false;

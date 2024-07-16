@@ -65,10 +65,15 @@ class CountryScreenState extends State<CountryScreen> {
     if (vpnService.stage?.toString() == 'connected') {
       vpnService.disconnect();
     }
+    String config;
     try {
-      String config =
-          await fetchConfig(country); // Assume fetchConfig is defined elsewhere
-      vpnService.setCountry(VpnCountry(country: country, config: config));
+      if (country != "Default") {
+        config = await fetchConfig(
+            country); // Assume fetchConfig is defined elsewhere
+        vpnService.setCountry(VpnCountry(country: country, config: config));
+      } else {
+        vpnService.setCountry(VpnCountry(country: country));
+      }
     } catch (e) {
       // Handle error fetching config
     }
@@ -85,6 +90,7 @@ class CountryScreenState extends State<CountryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final vpnService = Provider.of<VpnService>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -123,7 +129,9 @@ class CountryScreenState extends State<CountryScreen> {
                 String latency = countryData.values.elementAt(index);
                 return SelectableCountryCard(
                     countryLogo: CountryLogo(country: country),
-                    selected: true,
+                    selected: country == vpnService.currentCountry?.country
+                        ? true
+                        : false,
                     latency: latency,
                     onTap: () async {
                       fConfig(country);

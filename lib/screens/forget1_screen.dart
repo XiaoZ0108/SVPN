@@ -47,7 +47,14 @@ class ForgetScreenState extends State<ForgetScreen1> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const LottieController(ratio: 0.26, name: 'forget'),
+                const LottieController(
+                  ratio: 0.26,
+                  name: 'advertise',
+                  type: true,
+                ),
+                const SizedBox(
+                  height: 32,
+                ),
                 EmailForm(
                     controller: _emailController,
                     label: "Your Registered Email",

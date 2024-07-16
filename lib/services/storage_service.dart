@@ -22,4 +22,15 @@ class SecureStorageService {
   static Future<void> removeObject(String key) async {
     await _storage.delete(key: key);
   }
+
+  static Future<void> saveTime() async {
+    await _storage.write(
+        key: 'currentTime',
+        value: (DateTime.now().millisecondsSinceEpoch + 2000).toString());
+  }
+
+  static Future<String> readTime() async {
+    String? value = await _storage.read(key: 'currentTime');
+    return value ?? '0';
+  }
 }

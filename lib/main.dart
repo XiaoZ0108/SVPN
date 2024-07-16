@@ -13,6 +13,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'dart:async';
 
+import 'package:my_app/services/storage_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   VpnService.initializeEngine();
@@ -53,7 +55,7 @@ void onStart(ServiceInstance service) async {
     service.stopSelf();
   });
 
-  service.on('countdown').listen((event) {
+  service.on('countdown').listen((event) async {
     int time = event?['allowTime'] ?? 0; // Default duration if not provided
     int t = time;
     int flag = 0;
@@ -62,17 +64,21 @@ void onStart(ServiceInstance service) async {
         if (await service.isForegroundService()) {
           service.setForegroundNotificationInfo(
             title: "SecureNet VPN",
-            content: "Connected:Countdown $t--",
+            content: "Connected:Countdown $t",
           );
         }
       }
+      t -= 1;
 
       flag += 1;
       if (flag > time) {
-        VpnService.saveTime();
+        if (service is AndroidServiceInstance) {
+          service.setAsBackgroundService();
+        }
+        await SecureStorageService.saveTime();
         VpnService.disconnect2();
+
         timer.cancel();
-        service.stopSelf();
       }
     });
   });

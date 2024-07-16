@@ -30,18 +30,6 @@ class HomeState extends State<Home> {
     _restoreIpAddress();
   }
 
-  // Future<void> _restoreVpnState() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     _vpnState = prefs.getString('vpnState') ?? VpnEngine.vpnDisconnected;
-  //   });
-  // }
-
-  // Future<void> _saveVpnState(String state) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString('vpnState', state);
-  // }
-
   Future<void> _restoreIpAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {

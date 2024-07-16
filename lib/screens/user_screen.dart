@@ -38,8 +38,11 @@ class UserScreen extends StatelessWidget {
         padding: const EdgeInsets.only(top: 16, bottom: 16, left: 8, right: 8),
         child: Column(
           children: [
-            const LottieController(ratio: 0.24, name: 'user'),
-            const SizedBox(height: 16.0),
+            const LottieController(
+              ratio: 0.3,
+              name: 'dance',
+              type: true,
+            ),
             const Text(
               'Hi ',
               style: TextStyle(fontWeight: FontWeight.bold),
