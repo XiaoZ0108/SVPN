@@ -1,0 +1,38 @@
+
+//1//post //register param=email,password response=email otp
+//generate otp
+//store email password otp +timer
+//send otp
+
+//2//post //validate otp param=email,otp
+//retreieve record
+//check otp
+//save email and password(hash) into db
+
+//3//post //login param=email,password next=check db response=ok
+//check record
+//generate token
+//send back token
+
+//4//post //reset password param=email next=send otp next=validate otp  next=responce ok
+//generate otp
+//store email and otp
+//send otp
+
+//5//put //update param=email,password next=update db
+//retreieve record
+//check otp
+//update email and password(hash) into db
+
+//6//get //available country in json (ping)
+//return available country and ping
+
+//7//get //fetch json ovpn config param=countryname,emailname
+//check db record exist?
+//no=invoked other server who return json (https)
+//   store in db (timer)
+//yes=retireve record
+//send to client
+
+//8//post //validate-token
+//quick check //unhased token
