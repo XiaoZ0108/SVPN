@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'dart:convert';
 import 'dart:async';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({
@@ -199,8 +200,8 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
       var response = await http
           .post(
             Uri.parse(reset
-                ? 'http://192.168.0.5:3000/validateO'
-                : 'http://192.168.0.5:3000/validate'),
+                ? 'https://www.magicconchxhell.xyz/validateO'
+                : 'https://www.magicconchxhell.xyz/validate'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
@@ -261,7 +262,7 @@ class OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
   Future<void> resend(String email) async {
     try {
       var response = await http
-          .get(Uri.parse('http://192.168.0.5:3000/resendO?email=$email'))
+          .get(Uri.parse('${dotenv.env['BACKEND_IP']}/resendO?email=$email'))
           .timeout(const Duration(seconds: 30));
       var data = jsonDecode(response.body);
       if (response.statusCode == 200) {

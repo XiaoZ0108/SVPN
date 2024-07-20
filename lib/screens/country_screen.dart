@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:my_app/widget/animation.dart';
 import "package:my_app/models/vpn_country.dart";
 import 'package:my_app/services/user_services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class CountryScreen extends StatefulWidget {
   const CountryScreen({super.key});
@@ -29,7 +30,7 @@ class CountryScreenState extends State<CountryScreen> {
 
   Future<Map<String, String>> fetchCountryData() async {
     final response = await http
-        .get(Uri.parse('http://192.168.0.5:3000/vpnStatus'))
+        .get(Uri.parse('${dotenv.env['BACKEND_IP']}/vpnStatus'))
         .timeout(const Duration(seconds: 8));
 
     if (response.statusCode == 200) {
@@ -45,7 +46,7 @@ class CountryScreenState extends State<CountryScreen> {
     UserService userService = Provider.of<UserService>(context, listen: false);
     String currentToken = userService.token;
     final response = await http.get(
-        Uri.parse('http://192.168.0.5:3000/vpnConfig?country=$country'),
+        Uri.parse('${dotenv.env['BACKEND_IP']}/vpnConfig?country=$country'),
         headers: {
           'Authorization':
               'Bearer $currentToken', // Add Bearer token to headers

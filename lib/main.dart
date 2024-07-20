@@ -12,13 +12,13 @@ import 'package:my_app/screens/opt_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'dart:async';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_app/services/storage_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   VpnService.initializeEngine();
-
+  await dotenv.load(fileName: ".env");
   var status = await Permission.notification.status;
   if (status.isDenied) {
     await Permission.notification.request();

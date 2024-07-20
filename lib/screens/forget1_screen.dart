@@ -4,6 +4,7 @@ import 'package:my_app/widget/lottie_controller.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:my_app/widget/emailform.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ForgetScreen1 extends StatefulWidget {
   const ForgetScreen1({
@@ -102,7 +103,7 @@ class ForgetScreenState extends State<ForgetScreen1> {
     });
     try {
       var response = await http
-          .get(Uri.parse('http://192.168.0.5:3000/validateM?email=$email'))
+          .get(Uri.parse('${dotenv.env['BACKEND_IP']}/validateM?email=$email'))
           .timeout(const Duration(seconds: 15));
       var data = jsonDecode(response.body);
       if (response.statusCode == 200) {

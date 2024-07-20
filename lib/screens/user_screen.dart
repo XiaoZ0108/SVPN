@@ -3,6 +3,12 @@ import 'package:my_app/services/vpn_services.dart';
 import 'package:provider/provider.dart';
 import 'package:my_app/services/user_services.dart';
 import 'package:my_app/widget/lottie_controller.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+
+import 'package:my_app/models/user.dart';
 
 class UserScreen extends StatelessWidget {
   const UserScreen({super.key});
@@ -24,6 +30,47 @@ class UserScreen extends StatelessWidget {
     String email = userService.currentUserinfo?.email ?? 'null';
     String name = email == 'null' ? 'null' : getWordBeforeAtSymbol(email);
     bool premium = userService.currentUserinfo?.isPremium ?? false;
+
+    Future<void> goPremium() async {
+      UserService userService =
+          Provider.of<UserService>(context, listen: false);
+      String currentToken = userService.token;
+      try {
+        final response = await http
+            .get(Uri.parse('${dotenv.env['BACKEND_IP']}/goPremium'), headers: {
+          'Authorization':
+              'Bearer $currentToken', // Add Bearer token to headers
+        }).timeout(const Duration(seconds: 15));
+
+        if (response.statusCode == 200) {
+          Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+          var token = jsonResponse['newtoken'];
+
+          Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+          String userEmail = decodedToken['userId'];
+          bool isPremium = decodedToken['premium'];
+          UserService userService =
+              Provider.of<UserService>(context, listen: false);
+          userService.saveToken(token);
+          userService.setUser(UserInfo(email: userEmail, isPremium: isPremium));
+          if (!context.mounted) return;
+
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/homeScreen', (Route<dynamic> route) => false,
+              arguments: {'scIndex': "1"});
+        } else {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Some Error Occurs ${response.statusCode}')),
+          );
+        }
+      } catch (err) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Some Error Occurs')),
+        );
+      }
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -135,6 +182,13 @@ class UserScreen extends StatelessWidget {
                           : const Text("Free User")
                     ],
                   ),
+                  const Spacer(),
+                  if (!premium)
+                    ElevatedButton(
+                        onPressed: () async {
+                          await goPremium();
+                        },
+                        child: const Text("GO PREMIUM"))
                 ],
               ),
             ),

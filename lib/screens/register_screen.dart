@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:my_app/widget/emailform.dart';
 import 'package:my_app/widget/passwordform.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({
@@ -177,7 +178,7 @@ class RegisterScreenState extends State<RegisterScreen> {
     try {
       var response = await http
           .post(
-            Uri.parse('http://192.168.0.5:3000/register'),
+            Uri.parse('${dotenv.env['BACKEND_IP']}/register'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },

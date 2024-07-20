@@ -9,6 +9,7 @@ import 'package:my_app/widget/passwordform.dart';
 import 'package:provider/provider.dart';
 import 'package:my_app/services/user_services.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -206,7 +207,7 @@ class LoginScreenState extends State<LoginScreen> {
     try {
       var response = await http
           .post(
-            Uri.parse('http://192.168.0.5:3000/login'),
+            Uri.parse('${dotenv.env['BACKEND_IP']}/login'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },

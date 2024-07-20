@@ -4,6 +4,7 @@ import 'package:my_app/widget/lottie_controller.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:my_app/widget/passwordform.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ForgetScreen2 extends StatefulWidget {
   const ForgetScreen2({
@@ -145,7 +146,7 @@ class ForgetScreen2State extends State<ForgetScreen2> {
     try {
       var response = await http
           .post(
-            Uri.parse('http://192.168.0.5:3000/resetPass'),
+            Uri.parse('${dotenv.env['BACKEND_IP']}/resetPass'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },

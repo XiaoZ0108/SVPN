@@ -7,6 +7,7 @@ import 'package:openvpn_flutter/openvpn_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:my_app/services/storage_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class VpnConnectButton extends StatefulWidget {
   const VpnConnectButton({super.key, required this.getIp});
@@ -39,21 +40,6 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
                 await disconnect(vpnService);
               } else {
                 await connect(vpnService, context, token);
-                colour = Colors.orange;
-                isLoading = true;
-                int attempt = 0;
-                while (vpnService.stage?.toString() != 'connected' &&
-                    attempt < 20) {
-                  attempt += 1;
-                  await Future.delayed(const Duration(milliseconds: 500));
-                }
-                if (vpnService.stage?.toString() == 'connected') {
-                  colour = Colors.green;
-                  await widget.getIp(true);
-                } else {
-                  colour = Colors.blue;
-                }
-                isLoading = false;
               }
             },
       child: AnimatedContainer(
@@ -97,7 +83,7 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
       VpnService vpnService, BuildContext context, String token) async {
     String currentTime = await SecureStorageService.readTime();
     final response =
-        await http.post(Uri.parse('http://192.168.0.5:3000/connect'),
+        await http.post(Uri.parse('${dotenv.env['BACKEND_IP']}/connect'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
               'Authorization': 'Bearer $token',
@@ -130,6 +116,25 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
     } else {
       //print(responseData['error']);
     }
+    setState(() {
+      colour = Colors.orange;
+      isLoading = true;
+    });
+
+    int attempt = 0;
+    while (vpnService.stage?.toString() != 'connected' && attempt < 20) {
+      attempt += 1;
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
+    if (vpnService.stage?.toString() == 'connected') {
+      colour = Colors.green;
+      await widget.getIp(true);
+    } else {
+      colour = Colors.blue;
+    }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   disconnect(VpnService vpnService) async {
@@ -137,7 +142,9 @@ class VpnConnectButtonState extends State<VpnConnectButton> {
     await SecureStorageService.saveTime();
     vpnService.disconnect();
     await widget.getIp(false);
-    colour = Colors.blue;
-    isLoading = false;
+    setState(() {
+      colour = Colors.blue;
+      isLoading = false;
+    });
   }
 }

@@ -41,23 +41,28 @@ dependencies:
   change_app_package_name: ^1.2.0
   flutter_secure_storage: ^9.2.2
   lottie: ^3.1.2
-  logger: ^2.3.0
   flutter_keyboard_visibility: ^6.0.0
   pin_code_fields: ^8.0.1
   jwt_decoder: ^2.0.1
   permission_handler: ^11.3.1
   flutter_background_service: ^5.0.6
+  flutter_dotenv: ^5.1.0
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/shield.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -71,9 +76,11 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/icon/
     - assets/vpn/
     - assets/logo/
     - assets/animation/
+    - .env
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

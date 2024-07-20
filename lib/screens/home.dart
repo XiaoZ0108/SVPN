@@ -97,7 +97,8 @@ class HomeState extends State<Home> {
                 top: screenWidth * 0.06),
             child: NetworkSpeed(
               down: vpnService.status?.byteIn,
-              up: vpnService.status?.byteIn,
+              up: vpnService.status?.byteOut,
+              time: vpnService.status?.duration,
             ),
           ),
           VpnConnectButton(getIp: getIP),
