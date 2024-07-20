@@ -34,7 +34,7 @@ exports.getCountryPing = async (req, res) => {
 exports.getConfig = async (req, res) => {
   const { country } = req.query;
   const token = req.headers.authorization?.split(" ")[1];
-  const user = validateToken(token);
+  const user = await validateToken(token);
   if (!user) {
     return res.status(401).json({ message: "invalid Token" });
   }

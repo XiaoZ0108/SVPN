@@ -32,6 +32,7 @@ app.post("/resetPass", userController.resetPass); //reset password
 
 //resend mail
 app.get("/resendO", userController.resendMail);
+app.get("/goPremium", userController.goPremium);
 
 app.post("/connect", authMiddleware, async (req, res) => {
   const user = req.user;

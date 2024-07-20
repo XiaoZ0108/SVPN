@@ -15,9 +15,11 @@ const generateToken = (userId, userPremium) => {
   return token;
 };
 
-const validateToken = (token) => {
+const validateToken = async (token) => {
   try {
-    return jwt.verify(token, process.env.JWTSECRET);
+    const decoded = jwt.verify(token, process.env.JWTSECRET);
+    const user = await User.findById(decoded.userId);
+    return user;
   } catch (err) {
     return null;
   }
