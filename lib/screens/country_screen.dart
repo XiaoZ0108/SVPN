@@ -21,7 +21,7 @@ class CountryScreen extends StatefulWidget {
 
 class CountryScreenState extends State<CountryScreen> {
   late Future<Map<String, String>> _countryNames;
-
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -62,6 +62,9 @@ class CountryScreenState extends State<CountryScreen> {
   }
 
   void fConfig(String country) async {
+    setState(() {
+      isLoading = true;
+    });
     VpnService vpnService = Provider.of<VpnService>(context, listen: false);
     if (vpnService.stage?.toString() == 'connected') {
       vpnService.disconnect();
@@ -75,10 +78,19 @@ class CountryScreenState extends State<CountryScreen> {
       } else {
         vpnService.setCountry(VpnCountry(country: country));
       }
+      setState(() {
+        isLoading = false;
+      });
+      goback();
     } catch (e) {
-      // Handle error fetching config
+      setState(() {
+        isLoading = false;
+      });
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Some Error Occur')),
+      );
     }
-    goback();
   }
 
   void goback() {
@@ -105,43 +117,46 @@ class CountryScreenState extends State<CountryScreen> {
           ),
         ),
       ),
-      body: FutureBuilder<Map<String, String>>(
-        future: _countryNames,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LottieW(
-                lottie: 'find',
-                text: "Fetching Country List",
-                color: Colors.lightBlue);
-          } else if (snapshot.hasError) {
-            return const LottieW(
-              lottie: 'error',
-              text: "Oops! Something Went Wrong",
-              color: Color.fromARGB(255, 221, 128, 198),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No data available'));
-          } else {
-            Map<String, String> countryData = snapshot.data!;
-            return ListView.builder(
-              itemCount: countryData.length,
-              itemBuilder: (context, index) {
-                String country = countryData.keys.elementAt(index);
-                String latency = countryData.values.elementAt(index);
-                return SelectableCountryCard(
-                    countryLogo: CountryLogo(country: country),
-                    selected: country == vpnService.currentCountry?.country
-                        ? true
-                        : false,
-                    latency: latency,
-                    onTap: () async {
-                      fConfig(country);
-                    });
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : FutureBuilder<Map<String, String>>(
+              future: _countryNames,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const LottieW(
+                      lottie: 'find',
+                      text: "Fetching Country List",
+                      color: Colors.lightBlue);
+                } else if (snapshot.hasError) {
+                  return const LottieW(
+                    lottie: 'error',
+                    text: "Oops! Something Went Wrong",
+                    color: Color.fromARGB(255, 221, 128, 198),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No data available'));
+                } else {
+                  Map<String, String> countryData = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: countryData.length,
+                    itemBuilder: (context, index) {
+                      String country = countryData.keys.elementAt(index);
+                      String latency = countryData.values.elementAt(index);
+                      return SelectableCountryCard(
+                          countryLogo: CountryLogo(country: country),
+                          selected:
+                              country == vpnService.currentCountry?.country
+                                  ? true
+                                  : false,
+                          latency: latency,
+                          onTap: () async {
+                            fConfig(country);
+                          });
+                    },
+                  );
+                }
               },
-            );
-          }
-        },
-      ),
+            ),
     );
   }
 }
