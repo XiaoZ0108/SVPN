@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:my_app/models/vpn_country.dart';
 import 'package:my_app/services/user_services.dart';
+import 'package:my_app/services/ads.dart';
 
 class Home extends StatefulWidget {
   const Home({
@@ -23,11 +24,21 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
   late VpnService vpnService;
   String ip = "Not Connected";
+  final Ads _ads = Ads();
 
   @override
   void initState() {
     super.initState();
     _restoreIpAddress();
+    _ads.displayBannerAds(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _ads.dispose();
+    super.dispose();
   }
 
   Future<void> _restoreIpAddress() async {
@@ -102,7 +113,8 @@ class HomeState extends State<Home> {
             ),
           ),
           VpnConnectButton(getIp: getIP),
-          Text(userService.currentUserinfo?.email ?? 'null'),
+          const Spacer(),
+          if (_ads.isLoaded) _ads.getAdWidget(),
         ],
       ),
     );

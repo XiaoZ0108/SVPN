@@ -14,9 +14,11 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_app/services/storage_service.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
   VpnService.initializeEngine();
   await dotenv.load(fileName: ".env");
   var status = await Permission.notification.status;
