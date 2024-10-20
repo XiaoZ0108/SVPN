@@ -4,7 +4,7 @@
 
 SecureNet VPN is a reliable and secure virtual private network (VPN) solution designed to provide users with enhanced privacy and data protection. It focuses on strong encryption standards, robust authentication mechanisms, and a user-friendly interface. Built to address the growing concerns over online security and privacy, SecureNet VPN integrates modern cryptographic protocols to secure communications and protect sensitive data during transmission.
 
-This project is developed using **Node.js** for backend services and **React-Native** for the Android-based frontend, with **OpenVPN** as the primary protocol for VPN connections.
+This project is developed using **Node.js** for backend services and **Flutter** for the Android-based frontend, with **OpenVPN** as the primary protocol for VPN connections.
 
 ## Features
 
@@ -35,13 +35,16 @@ The system architecture is divided into three main components:
 
 ## Tools & Technologies
 
-- **Frontend**: React-Native
+- **Frontend**: Flutter
 - **Backend**: Node.js
 - **Protocols**: OpenVPN, AES-256-GCM encryption, RSA key exchange
 - **Database**: MongoDB
 - **Operating System**: Android (client), Linux (server)
 - **Development Tools**: Visual Studio Code, Android Studio
 - **Version Control**: Git
+- **Deploy On**: Amazon Web Service
 
+## PIC
+![Alt text](./images/arch.jpg)
 
 
