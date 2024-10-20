@@ -45,6 +45,6 @@ The system architecture is divided into three main components:
 - **Deploy On**: Amazon Web Service
 
 ## PIC
-![Alt text](./images/arch.jpg)
+![Alt text](./images/arch.png)
 
 
