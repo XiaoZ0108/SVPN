@@ -29,7 +29,7 @@ SecureNet VPN supports **one-to-one mapping** for server connections, ensuring t
 ## System Architecture
 
 The system architecture is divided into three main components:
-1. **Client Frontend (Android Application)**: A React-Native-based application that allows users to interact with the VPN services.
+1. **Client Frontend (Android Application)**: A Flutter application that allows users to interact with the VPN services.
 2. **Centralized Backend**: The backend is built using Node.js and handles user authentication, access control, and configuration management.
 3. **VPN Server**: The VPN server, built on **OpenVPN**, is responsible for managing secure connections and tunneling user traffic.
 
@@ -46,5 +46,7 @@ The system architecture is divided into three main components:
 
 ## PIC
 ![Alt text](./images/arch.png)
+![Alt text](./images/arch2.png)
+![Alt text](./images/arch3.png)
 
 
